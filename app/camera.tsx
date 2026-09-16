@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { addToQueueAsync } from '../database/sqlite';
 import { queueManager } from '../services/queueManager';
 import { useQueue } from '../context/QueueContext';
+import { Colors } from '../constants/colors';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
 const PHOTOS_DIR = `${FileSystem.documentDirectory}photos/`;
@@ -407,7 +408,7 @@ export default function CameraScreen() {
   if (!permission.granted) {
     return (
       <SafeAreaView style={[styles.darkBackground, styles.centered]}>
-        <Ionicons name="camera-outline" size={64} color="#3B82F6" />
+        <Ionicons name="camera-outline" size={64} color={Colors.primaryLight} />
         <Text style={styles.permissionTitle}>Camera Access Required</Text>
         <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
           <Text style={styles.permissionButtonText}>Grant Camera Permission</Text>
@@ -562,7 +563,7 @@ export default function CameraScreen() {
             <Ionicons
               name={attendeeId === 'no_id' ? 'images' : 'person'}
               size={13}
-              color="#60A5FA"
+              color={Colors.primaryLight}
               style={{ flexShrink: 0 }}
             />
             <Text style={styles.sessionPillText} numberOfLines={1} ellipsizeMode="tail">
@@ -601,7 +602,7 @@ export default function CameraScreen() {
               <Ionicons
                 name="grid-outline"
                 size={16}
-                color={showGrid ? '#F59E0B' : '#FFFFFF'}
+                color={showGrid ? Colors.primaryLight : '#FFFFFF'}
               />
             </TouchableOpacity>
 
@@ -631,7 +632,7 @@ export default function CameraScreen() {
                     : 'flash-outline'
                 }
                 size={18}
-                color={flashMode !== 'off' ? '#F59E0B' : '#FFFFFF'}
+                color={flashMode !== 'off' ? Colors.primaryLight : '#FFFFFF'}
               />
             </TouchableOpacity>
           </View>
@@ -691,7 +692,7 @@ export default function CameraScreen() {
             <View style={styles.dropdownHeaderRow}>
               <Text style={styles.dropdownHeaderText}>FLASH MODE</Text>
               <TouchableOpacity onPress={() => setIsFlashMenuOpen(false)}>
-                <Ionicons name="close" size={14} color="#94A3B8" />
+                <Ionicons name="close" size={14} color={Colors.textMuted} />
               </TouchableOpacity>
             </View>
 
@@ -721,7 +722,7 @@ export default function CameraScreen() {
                     <Ionicons
                       name={item.icon as any}
                       size={17}
-                      color={isSelected ? '#F59E0B' : '#CBD5E1'}
+                      color={isSelected ? Colors.primaryLight : Colors.textSecondary}
                     />
                     <View style={{ marginLeft: 10 }}>
                       <Text
@@ -736,7 +737,7 @@ export default function CameraScreen() {
                     </View>
                   </View>
                   {isSelected && (
-                    <Ionicons name="checkmark-circle" size={16} color="#F59E0B" />
+                    <Ionicons name="checkmark-circle" size={16} color={Colors.primaryLight} />
                   )}
                 </TouchableOpacity>
               );
@@ -813,7 +814,7 @@ export default function CameraScreen() {
                 <Image source={{ uri: latestPhotoUri }} style={styles.previewImage} />
               ) : (
                 <View style={styles.previewPlaceholder}>
-                  <Ionicons name="images" size={20} color="#94A3B8" />
+                  <Ionicons name="images" size={20} color={Colors.textMuted} />
                 </View>
               )}
             </TouchableOpacity>
@@ -845,7 +846,7 @@ const styles = StyleSheet.create({
   },
   darkBackground: {
     flex: 1,
-    backgroundColor: '#0A0F1D',
+    backgroundColor: Colors.background,
   },
   centered: {
     justifyContent: 'center',
@@ -855,18 +856,18 @@ const styles = StyleSheet.create({
   permissionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     marginTop: 20,
   },
   permissionButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.primary,
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 14,
     marginTop: 24,
   },
   permissionButtonText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontWeight: '700',
     fontSize: 15,
   },
@@ -955,48 +956,48 @@ const styles = StyleSheet.create({
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    backgroundColor: 'rgba(21, 11, 40, 0.75)',
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: Colors.border,
     gap: 2,
     flexShrink: 0,
   },
   backButtonText: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 13,
     fontWeight: '600',
   },
   sessionPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    backgroundColor: 'rgba(21, 11, 40, 0.85)',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.3)',
+    borderColor: Colors.borderLight,
     gap: 6,
     flexShrink: 1,
     maxWidth: 180,
   },
   sessionPillText: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 12.5,
     fontWeight: '700',
     flexShrink: 1,
   },
   sessionCountBadge: {
-    backgroundColor: '#2563EB',
+    backgroundColor: Colors.primary,
     paddingHorizontal: 6,
     paddingVertical: 1,
     borderRadius: 8,
     flexShrink: 0,
   },
   sessionCountText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 11,
     fontWeight: '800',
   },
@@ -1010,33 +1011,33 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    backgroundColor: 'rgba(21, 11, 40, 0.75)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: Colors.border,
   },
   smallActionBtnActive: {
-    borderColor: '#F59E0B',
-    backgroundColor: 'rgba(245, 158, 11, 0.25)',
+    borderColor: Colors.primaryLight,
+    backgroundColor: Colors.primaryGlow,
   },
   // Samsung Aspect Ratio Trigger Button
   samsungRatioTriggerBtn: {
     height: 36,
     paddingHorizontal: 10,
     borderRadius: 18,
-    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    backgroundColor: 'rgba(21, 11, 40, 0.75)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: Colors.border,
   },
   samsungRatioTriggerBtnActive: {
-    borderColor: '#F59E0B',
-    backgroundColor: 'rgba(245, 158, 11, 0.22)',
+    borderColor: Colors.primaryLight,
+    backgroundColor: Colors.primaryGlow,
   },
   samsungRatioTriggerText: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 12,
     fontWeight: '800',
     letterSpacing: 0.5,
@@ -1046,12 +1047,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignSelf: 'center',
     flexDirection: 'row',
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
     borderRadius: 24,
     padding: 4,
     gap: 6,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
+    borderColor: Colors.borderLight,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.5,
@@ -1066,15 +1067,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   samsungRatioOptionActive: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: Colors.primary,
   },
   samsungRatioOptionText: {
-    color: '#CBD5E1',
+    color: Colors.textSecondary,
     fontSize: 13,
     fontWeight: '700',
   },
   samsungRatioOptionTextActive: {
-    color: '#0F172A',
+    color: Colors.textPrimary,
     fontWeight: '800',
   },
   // Flash Dropdown Menu
@@ -1091,11 +1092,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     width: 195,
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
     borderRadius: 16,
     padding: 8,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
+    borderColor: Colors.borderLight,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.5,
@@ -1111,13 +1112,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderBottomWidth: 1,
-    borderBottomColor: '#334155',
+    borderBottomColor: Colors.border,
     marginBottom: 4,
   },
   dropdownHeaderText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#94A3B8',
+    color: Colors.textMuted,
     letterSpacing: 0.8,
   },
   dropdownItem: {
@@ -1129,7 +1130,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   dropdownItemActive: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: Colors.primaryGlow,
   },
   dropdownItemLeft: {
     flexDirection: 'row',
@@ -1138,15 +1139,15 @@ const styles = StyleSheet.create({
   dropdownItemLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
   },
   dropdownItemLabelActive: {
-    color: '#F59E0B',
+    color: Colors.primaryLight,
     fontWeight: '800',
   },
   dropdownItemDesc: {
     fontSize: 10,
-    color: '#94A3B8',
+    color: Colors.textMuted,
     marginTop: 1,
   },
   // Zoom Controls - Overlaid on the Camera Feed Component, floating right above bottom bar
@@ -1158,11 +1159,11 @@ const styles = StyleSheet.create({
   },
   zoomPills: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(15, 23, 42, 0.70)',
+    backgroundColor: 'rgba(21, 11, 40, 0.75)',
     borderRadius: 22,
     padding: 3,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
+    borderColor: Colors.border,
     gap: 4,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
@@ -1176,28 +1177,28 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   zoomPillActive: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: Colors.primary,
   },
   zoomPillText: {
-    color: '#CBD5E1',
+    color: Colors.textSecondary,
     fontSize: 11,
     fontWeight: '700',
   },
   zoomPillTextActive: {
-    color: '#0F172A',
+    color: Colors.textPrimary,
     fontWeight: '800',
   },
   zoomMultiplierTag: {
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    backgroundColor: 'rgba(21, 11, 40, 0.85)',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
     marginTop: 4,
     borderWidth: 0.5,
-    borderColor: 'rgba(245, 158, 11, 0.4)',
+    borderColor: Colors.borderLight,
   },
   zoomIndicatorText: {
-    color: '#FCD34D',
+    color: Colors.primaryLight,
     fontSize: 10,
     fontWeight: '800',
   },
@@ -1228,7 +1229,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   statusText: {
-    color: '#CBD5E1',
+    color: Colors.textSecondary,
     fontSize: 11,
     fontWeight: '500',
     letterSpacing: 0.2,
@@ -1254,21 +1255,21 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(30, 41, 59, 0.85)',
+    backgroundColor: 'rgba(30, 16, 56, 0.85)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: Colors.border,
   },
   shutterOuterRing: {
     width: 74,
     height: 74,
     borderRadius: 37,
     borderWidth: 4,
-    borderColor: '#FFFFFF',
+    borderColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: Colors.primaryGlow,
   },
   shutterInnerCircle: {
     width: 58,
@@ -1282,8 +1283,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.8)',
-    backgroundColor: '#1E293B',
+    borderColor: Colors.borderLight,
+    backgroundColor: Colors.cardElevated,
     justifyContent: 'center',
     alignItems: 'center',
   },

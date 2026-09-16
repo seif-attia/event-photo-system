@@ -20,6 +20,7 @@ import { useSettings } from "../context/SettingsContext";
 import { getPrecreatedFoldersCountAsync } from "../database/sqlite";
 import { DriveFolderPickerModal } from "../components/DriveFolderPickerModal";
 import { DriveFolderItem } from "../services/driveApi";
+import { Colors } from "../constants/colors";
 
 export default function AuthScreen() {
   const router = useRouter();
@@ -161,7 +162,7 @@ export default function AuthScreen() {
         {/* Hero Branding */}
         <View style={styles.heroSection}>
           <View style={styles.iconCircle}>
-            <Ionicons name="camera" size={44} color="#3B82F6" />
+            <Ionicons name="camera" size={44} color={Colors.primaryLight} />
           </View>
           <Text style={styles.appTitle}>Event Photo Booth</Text>
           <Text style={styles.subtitle}>
@@ -177,7 +178,7 @@ export default function AuthScreen() {
                 <Image source={{ uri: user.picture }} style={styles.avatar} />
               ) : (
                 <View style={[styles.avatar, styles.avatarPlaceholder]}>
-                  <Ionicons name="person" size={28} color="#94A3B8" />
+                  <Ionicons name="person" size={28} color={Colors.textMuted} />
                 </View>
               )}
               <View style={styles.profileText}>
@@ -193,7 +194,7 @@ export default function AuthScreen() {
 
             {/* Folder Destination Info */}
             <View style={styles.infoRow}>
-              <Ionicons name="folder-open-outline" size={18} color="#60A5FA" />
+              <Ionicons name="folder-open-outline" size={18} color={Colors.primaryLight} />
               <View style={{ flex: 1, marginLeft: 10 }}>
                 <Text style={styles.infoLabel}>Drive Destination Folder</Text>
                 <Text style={styles.infoValue} numberOfLines={1}>
@@ -207,14 +208,14 @@ export default function AuthScreen() {
                 style={styles.changeFolderBtn}
                 onPress={() => setShowFolderPicker(true)}
               >
-                <Ionicons name="swap-horizontal" size={14} color="#60A5FA" />
+                <Ionicons name="swap-horizontal" size={14} color={Colors.primaryLight} />
                 <Text style={styles.changeFolderBtnText}>Change</Text>
               </TouchableOpacity>
             </View>
 
             {/* Pre-Created Attendee Folders Row */}
             <View style={styles.infoRow}>
-              <Ionicons name="people-outline" size={18} color="#10B981" />
+              <Ionicons name="people-outline" size={18} color={Colors.success} />
               <View style={{ flex: 1, marginLeft: 10 }}>
                 <Text style={styles.infoLabel}>
                   Pre-Created Folders (Offline Cache)
@@ -238,9 +239,9 @@ export default function AuthScreen() {
                 disabled={isSyncing}
               >
                 {isSyncing ? (
-                  <ActivityIndicator size="small" color="#60A5FA" />
+                  <ActivityIndicator size="small" color={Colors.primaryLight} />
                 ) : (
-                  <Ionicons name="sync-outline" size={16} color="#60A5FA" />
+                  <Ionicons name="sync-outline" size={16} color={Colors.primaryLight} />
                 )}
               </TouchableOpacity>
             </View>
@@ -250,19 +251,19 @@ export default function AuthScreen() {
               <Text style={styles.queueBoxTitle}>Current Queue Status</Text>
               <View style={styles.queueStatsRow}>
                 <View style={styles.queueStat}>
-                  <Text style={[styles.statNumber, { color: "#F59E0B" }]}>
+                  <Text style={[styles.statNumber, { color: Colors.warning }]}>
                     {stats.pending}
                   </Text>
                   <Text style={styles.statDescription}>Pending</Text>
                 </View>
                 <View style={styles.queueStat}>
-                  <Text style={[styles.statNumber, { color: "#3B82F6" }]}>
+                  <Text style={[styles.statNumber, { color: Colors.primaryLight }]}>
                     {stats.uploading}
                   </Text>
                   <Text style={styles.statDescription}>Syncing</Text>
                 </View>
                 <View style={styles.queueStat}>
-                  <Text style={[styles.statNumber, { color: "#10B981" }]}>
+                  <Text style={[styles.statNumber, { color: Colors.success }]}>
                     {stats.completed}
                   </Text>
                   <Text style={styles.statDescription}>Uploaded</Text>
@@ -278,7 +279,7 @@ export default function AuthScreen() {
               <Ionicons
                 name="camera-reverse-outline"
                 size={22}
-                color="#FFFFFF"
+                color={Colors.textPrimary}
               />
               <Text style={styles.primaryButtonText}>Enter Photo Booth</Text>
             </TouchableOpacity>
@@ -288,7 +289,7 @@ export default function AuthScreen() {
               style={styles.signOutButton}
               onPress={handleSignOut}
             >
-              <Ionicons name="log-out-outline" size={18} color="#EF4444" />
+              <Ionicons name="log-out-outline" size={18} color={Colors.error} />
               <Text style={styles.signOutText}>Sign Out Staff Account</Text>
             </TouchableOpacity>
           </View>
@@ -302,7 +303,7 @@ export default function AuthScreen() {
 
             {errorMessage && (
               <View style={styles.errorBox}>
-                <Ionicons name="warning-outline" size={18} color="#EF4444" />
+                <Ionicons name="warning-outline" size={18} color={Colors.error} />
                 <Text style={styles.errorText}>{errorMessage}</Text>
               </View>
             )}
@@ -314,7 +315,7 @@ export default function AuthScreen() {
               disabled={isSigningIn}
             >
               {isSigningIn ? (
-                <ActivityIndicator color="#0F172A" />
+                <ActivityIndicator color={Colors.background} />
               ) : (
                 <>
                   <Ionicons name="logo-google" size={20} color="#EA4335" />
@@ -339,7 +340,7 @@ export default function AuthScreen() {
                   onPress={handleDemoSignIn}
                   disabled={isSigningIn}
                 >
-                  <Ionicons name="flask-outline" size={20} color="#60A5FA" />
+                  <Ionicons name="flask-outline" size={20} color={Colors.primaryLight} />
                   <Text style={styles.demoButtonText}>
                     Launch Demo Mode (Offline / Sandbox)
                   </Text>
@@ -371,7 +372,7 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0A0F1D",
+    backgroundColor: Colors.background,
   },
   scrollContent: {
     padding: 24,
@@ -387,10 +388,12 @@ const styles = StyleSheet.create({
   onlineBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1E293B",
+    backgroundColor: Colors.cardElevated,
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   dot: {
     width: 8,
@@ -399,14 +402,16 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   onlineText: {
-    color: "#94A3B8",
+    color: Colors.textMuted,
     fontSize: 12,
     fontWeight: "600",
   },
   settingsIconButton: {
     padding: 8,
     borderRadius: 12,
-    backgroundColor: "#1E293B",
+    backgroundColor: Colors.cardElevated,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   heroSection: {
     alignItems: "center",
@@ -416,57 +421,57 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "#1E293B",
+    backgroundColor: Colors.cardElevated,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
     borderWidth: 2,
-    borderColor: "#3B82F6",
+    borderColor: Colors.primaryLight,
   },
   appTitle: {
     fontSize: 28,
     fontWeight: "800",
-    color: "#F8FAFC",
+    color: Colors.textPrimary,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 14,
-    color: "#94A3B8",
+    color: Colors.textSecondary,
     textAlign: "center",
     marginTop: 6,
   },
   signInCard: {
-    backgroundColor: "#131D31",
+    backgroundColor: Colors.card,
     borderRadius: 20,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#1E293B",
+    borderColor: Colors.border,
   },
   cardHeading: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#F8FAFC",
+    color: Colors.textPrimary,
     marginBottom: 8,
   },
   cardSubtext: {
     fontSize: 13,
-    color: "#94A3B8",
+    color: Colors.textSecondary,
     lineHeight: 18,
     marginBottom: 16,
   },
   scopeNotice: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: "rgba(16, 185, 129, 0.1)",
+    backgroundColor: Colors.successBg,
     borderRadius: 12,
     padding: 12,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: "rgba(16, 185, 129, 0.25)",
+    borderColor: "rgba(16, 185, 129, 0.3)",
   },
   scopeNoticeText: {
     fontSize: 12,
-    color: "#A7F3D0",
+    color: Colors.success,
     marginLeft: 10,
     flex: 1,
     lineHeight: 16,
@@ -474,15 +479,15 @@ const styles = StyleSheet.create({
   errorBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(239, 68, 68, 0.15)",
+    backgroundColor: Colors.errorBg,
     padding: 12,
     borderRadius: 10,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "rgba(239, 68, 68, 0.3)",
+    borderColor: "rgba(244, 63, 94, 0.3)",
   },
   errorText: {
-    color: "#FCA5A5",
+    color: Colors.error,
     fontSize: 12,
     marginLeft: 8,
     flex: 1,
@@ -497,7 +502,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   googleButtonText: {
-    color: "#0F172A",
+    color: Colors.background,
     fontSize: 15,
     fontWeight: "700",
   },
@@ -509,43 +514,43 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: "#2A374F",
+    backgroundColor: Colors.border,
   },
   orText: {
-    color: "#64748B",
+    color: Colors.textMuted,
     fontSize: 11,
     fontWeight: "600",
     marginHorizontal: 10,
   },
   demoButton: {
-    backgroundColor: "#1E293B",
+    backgroundColor: Colors.cardElevated,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 14,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#3B82F6",
+    borderColor: Colors.borderLight,
     gap: 10,
   },
   demoButtonText: {
-    color: "#60A5FA",
+    color: Colors.primaryLight,
     fontSize: 14,
     fontWeight: "600",
   },
   demoCaption: {
     fontSize: 11,
-    color: "#64748B",
+    color: Colors.textMuted,
     textAlign: "center",
     marginTop: 10,
     lineHeight: 15,
   },
   profileCard: {
-    backgroundColor: "#131D31",
+    backgroundColor: Colors.card,
     borderRadius: 20,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#1E293B",
+    borderColor: Colors.border,
   },
   profileHeader: {
     flexDirection: "row",
@@ -558,7 +563,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
   },
   avatarPlaceholder: {
-    backgroundColor: "#1E293B",
+    backgroundColor: Colors.cardElevated,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -567,17 +572,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userName: {
-    color: "#F8FAFC",
+    color: Colors.textPrimary,
     fontSize: 17,
     fontWeight: "700",
   },
   userEmail: {
-    color: "#94A3B8",
+    color: Colors.textSecondary,
     fontSize: 13,
     marginTop: 2,
   },
   demoBadge: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: Colors.primaryGlow,
     alignSelf: "flex-start",
     paddingVertical: 2,
     paddingHorizontal: 8,
@@ -585,39 +590,43 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   demoBadgeText: {
-    color: "#93C5FD",
+    color: Colors.primaryLight,
     fontSize: 10,
     fontWeight: "800",
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#0F172A",
+    backgroundColor: Colors.cardElevated,
     padding: 12,
     borderRadius: 12,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   infoLabel: {
     fontSize: 11,
-    color: "#64748B",
+    color: Colors.textMuted,
     textTransform: "uppercase",
     fontWeight: "600",
   },
   infoValue: {
     fontSize: 13,
-    color: "#CBD5E1",
+    color: Colors.textPrimary,
     fontWeight: "500",
     marginTop: 2,
   },
   queueBox: {
-    backgroundColor: "#0F172A",
+    backgroundColor: Colors.cardElevated,
     borderRadius: 12,
     padding: 14,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   queueBoxTitle: {
     fontSize: 12,
-    color: "#94A3B8",
+    color: Colors.textSecondary,
     fontWeight: "600",
     marginBottom: 10,
   },
@@ -634,11 +643,11 @@ const styles = StyleSheet.create({
   },
   statDescription: {
     fontSize: 11,
-    color: "#64748B",
+    color: Colors.textMuted,
     marginTop: 2,
   },
   primaryButton: {
-    backgroundColor: "#2563EB",
+    backgroundColor: Colors.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -648,7 +657,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   primaryButtonText: {
-    color: "#FFFFFF",
+    color: Colors.textPrimary,
     fontSize: 16,
     fontWeight: "700",
   },
@@ -658,48 +667,48 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
+    backgroundColor: Colors.errorBg,
     gap: 6,
   },
   signOutText: {
-    color: "#EF4444",
+    color: Colors.error,
     fontSize: 13,
     fontWeight: "600",
   },
   quickSyncBtn: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: "rgba(59, 130, 246, 0.1)",
+    backgroundColor: Colors.primaryGlow,
   },
   changeFolderBtn: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(59, 130, 246, 0.15)",
+    backgroundColor: Colors.primaryGlow,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
     gap: 4,
   },
   changeFolderBtnText: {
-    color: "#60A5FA",
+    color: Colors.primaryLight,
     fontSize: 12,
     fontWeight: "700",
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(10, 15, 29, 0.8)",
+    backgroundColor: "rgba(11, 6, 22, 0.85)",
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
   modalCard: {
-    backgroundColor: "#131D31",
+    backgroundColor: Colors.card,
     borderRadius: 18,
     padding: 22,
     width: "100%",
     maxWidth: 420,
     borderWidth: 1,
-    borderColor: "#1E293B",
+    borderColor: Colors.border,
   },
   modalHeaderRow: {
     flexDirection: "row",
@@ -710,34 +719,34 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#F8FAFC",
+    color: Colors.textPrimary,
   },
   modalSubtitle: {
     fontSize: 13,
-    color: "#94A3B8",
+    color: Colors.textSecondary,
     lineHeight: 18,
     marginBottom: 16,
   },
   modalInput: {
-    backgroundColor: "#0F172A",
+    backgroundColor: Colors.cardElevated,
     borderRadius: 10,
     paddingHorizontal: 14,
     height: 48,
-    color: "#FFFFFF",
+    color: Colors.textPrimary,
     fontSize: 14,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: Colors.border,
     marginBottom: 14,
   },
   modalPrimaryBtn: {
-    backgroundColor: "#2563EB",
+    backgroundColor: Colors.primary,
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: "center",
     justifyContent: "center",
   },
   modalPrimaryBtnText: {
-    color: "#FFFFFF",
+    color: Colors.textPrimary,
     fontSize: 14,
     fontWeight: "700",
   },
@@ -745,13 +754,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(96, 165, 250, 0.1)",
+    backgroundColor: Colors.primaryGlow,
     borderRadius: 10,
     paddingVertical: 12,
     gap: 8,
   },
   modalSecondaryBtnText: {
-    color: "#60A5FA",
+    color: Colors.primaryLight,
     fontSize: 13,
     fontWeight: "600",
   },
@@ -761,7 +770,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   modalCancelBtnText: {
-    color: "#94A3B8",
+    color: Colors.textMuted,
     fontSize: 13,
   },
 });

@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getAllQueueItemsAsync } from '../database/sqlite';
 import { UploadQueueRecord, QueueStatus } from '../database/schema';
+import { Colors } from '../constants/colors';
 
 interface MiniGalleryModalProps {
   visible: boolean;
@@ -74,13 +75,13 @@ export const MiniGalleryModal: React.FC<MiniGalleryModalProps> = ({
   const renderStatusIcon = (status: QueueStatus) => {
     switch (status) {
       case 'completed':
-        return <Ionicons name="checkmark-circle" size={14} color="#10B981" />;
+        return <Ionicons name="checkmark-circle" size={14} color={Colors.success} />;
       case 'uploading':
-        return <ActivityIndicator size="small" color="#3B82F6" style={{ transform: [{ scale: 0.6 }] }} />;
+        return <ActivityIndicator size="small" color={Colors.primaryLight} style={{ transform: [{ scale: 0.6 }] }} />;
       case 'pending':
-        return <Ionicons name="time" size={14} color="#F59E0B" />;
+        return <Ionicons name="time" size={14} color={Colors.warning} />;
       case 'failed':
-        return <Ionicons name="alert-circle" size={14} color="#EF4444" />;
+        return <Ionicons name="alert-circle" size={14} color={Colors.error} />;
     }
   };
 
@@ -91,7 +92,7 @@ export const MiniGalleryModal: React.FC<MiniGalleryModalProps> = ({
           {/* Top Bar */}
           <View style={styles.headerRow}>
             <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-              <Ionicons name="close" size={24} color="#FFFFFF" />
+              <Ionicons name="close" size={24} color={Colors.textPrimary} />
             </TouchableOpacity>
 
             <View style={styles.headerTitleContainer}>
@@ -102,7 +103,7 @@ export const MiniGalleryModal: React.FC<MiniGalleryModalProps> = ({
             </View>
 
             <TouchableOpacity style={styles.refreshBtn} onPress={loadPhotos}>
-              <Ionicons name="refresh" size={18} color="#94A3B8" />
+              <Ionicons name="refresh" size={18} color={Colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -115,7 +116,7 @@ export const MiniGalleryModal: React.FC<MiniGalleryModalProps> = ({
               <Ionicons
                 name="person"
                 size={14}
-                color={activeTab === 'current' ? '#FFFFFF' : '#94A3B8'}
+                color={activeTab === 'current' ? Colors.textPrimary : Colors.textMuted}
               />
               <Text style={[styles.tabText, activeTab === 'current' && styles.tabTextActive]}>
                 {currentAttendeeName ? `${currentAttendeeName}` : `Code: ${currentAttendeeId}`}
@@ -129,7 +130,7 @@ export const MiniGalleryModal: React.FC<MiniGalleryModalProps> = ({
               <Ionicons
                 name="images"
                 size={14}
-                color={activeTab === 'all' ? '#FFFFFF' : '#94A3B8'}
+                color={activeTab === 'all' ? Colors.textPrimary : Colors.textMuted}
               />
               <Text style={[styles.tabText, activeTab === 'all' && styles.tabTextActive]}>
                 All Photos ({allItems.length})
@@ -141,11 +142,11 @@ export const MiniGalleryModal: React.FC<MiniGalleryModalProps> = ({
         {/* Photos Grid */}
         {isLoading ? (
           <View style={styles.centered}>
-            <ActivityIndicator size="large" color="#3B82F6" />
+            <ActivityIndicator size="large" color={Colors.primaryLight} />
           </View>
         ) : displayedItems.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Ionicons name="images-outline" size={56} color="#334155" />
+            <Ionicons name="images-outline" size={56} color={Colors.textMuted} />
             <Text style={styles.emptyTitle}>No Photos in this View</Text>
             <Text style={styles.emptySubtitle}>
               {activeTab === 'current'
@@ -182,7 +183,7 @@ export const MiniGalleryModal: React.FC<MiniGalleryModalProps> = ({
                     style={styles.singleCloseBtn}
                     onPress={() => setSelectedPhoto(null)}
                   >
-                    <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+                    <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
                   </TouchableOpacity>
                   <Text style={styles.singleViewTitle} numberOfLines={1}>
                     Attendee: {selectedPhoto.attendee_id}
@@ -239,12 +240,12 @@ export const MiniGalleryModal: React.FC<MiniGalleryModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0F1D',
+    backgroundColor: Colors.background,
   },
   safeHeader: {
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
+    borderBottomColor: Colors.border,
   },
   headerRow: {
     flexDirection: 'row',
@@ -257,7 +258,9 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
+    borderWidth: 1,
+    borderColor: Colors.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -265,12 +268,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 17,
     fontWeight: '700',
   },
   headerSubtitle: {
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     fontSize: 11,
     marginTop: 2,
   },
@@ -278,7 +281,9 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
+    borderWidth: 1,
+    borderColor: Colors.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -295,19 +300,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 8,
     borderRadius: 10,
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
+    borderWidth: 1,
+    borderColor: Colors.border,
     gap: 6,
   },
   tabBtnActive: {
-    backgroundColor: '#2563EB',
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primaryLight,
   },
   tabText: {
-    color: '#94A3B8',
+    color: Colors.textMuted,
     fontSize: 13,
     fontWeight: '600',
   },
   tabTextActive: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontWeight: '700',
   },
   gridContent: {
@@ -318,7 +326,7 @@ const styles = StyleSheet.create({
     height: ITEM_SIZE,
     margin: GRID_SPACING / 2,
     position: 'relative',
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -330,7 +338,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 4,
     right: 4,
-    backgroundColor: 'rgba(0,0,0,0.65)',
+    backgroundColor: 'rgba(21, 11, 40, 0.85)',
     borderRadius: 10,
     padding: 3,
   },
@@ -346,13 +354,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   emptyTitle: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 16,
     fontWeight: '700',
     marginTop: 12,
   },
   emptySubtitle: {
-    color: '#64748B',
+    color: Colors.textSecondary,
     fontSize: 12,
     textAlign: 'center',
     marginTop: 4,
@@ -360,7 +368,7 @@ const styles = StyleSheet.create({
   },
   singleViewBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    backgroundColor: 'rgba(11, 6, 22, 0.96)',
   },
   singleViewSafe: {
     flex: 1,
@@ -376,12 +384,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: Colors.cardElevated,
+    borderWidth: 1,
+    borderColor: Colors.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
   singleViewTitle: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -391,13 +401,13 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   singleInfoCard: {
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.cardElevated,
     marginHorizontal: 16,
     marginBottom: 16,
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#1E293B',
+    borderColor: Colors.border,
     gap: 8,
   },
   singleInfoRow: {
@@ -406,12 +416,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   singleInfoLabel: {
-    color: '#94A3B8',
+    color: Colors.textMuted,
     fontSize: 13,
     fontWeight: '500',
   },
   singleInfoVal: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 13,
     fontWeight: '600',
   },

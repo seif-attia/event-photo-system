@@ -11,16 +11,17 @@ import { ActivityIndicator, View, StyleSheet } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 
 import { ThemeProvider, DarkTheme } from 'expo-router/react-navigation';
+import { Colors } from '../constants/colors';
 
 const appTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    background: '#0A0F1D',
-    card: '#0F172A',
-    text: '#FFFFFF',
-    border: '#1E293B',
-    primary: '#3B82F6',
+    background: Colors.background,
+    card: Colors.card,
+    text: Colors.textPrimary,
+    border: Colors.border,
+    primary: Colors.primary,
   },
 };
 
@@ -46,7 +47,7 @@ function RootNavigation() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3B82F6" />
+        <ActivityIndicator size="large" color={Colors.primaryLight} />
       </View>
     );
   }
@@ -56,7 +57,7 @@ function RootNavigation() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#0A0F1D' },
+          contentStyle: { backgroundColor: Colors.background },
         }}
       >
       <Stack.Screen name="auth" options={{ headerShown: false, animation: 'fade' }} />
@@ -75,8 +76,8 @@ function RootNavigation() {
           presentation: 'modal',
           headerShown: true,
           title: 'App Settings',
-          headerStyle: { backgroundColor: '#0F172A' },
-          headerTintColor: '#FFFFFF',
+          headerStyle: { backgroundColor: Colors.card },
+          headerTintColor: Colors.textPrimary,
         }}
       />
       </Stack>
@@ -102,7 +103,7 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0A0F1D',
+    backgroundColor: Colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },

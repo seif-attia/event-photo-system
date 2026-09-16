@@ -16,6 +16,7 @@ import { getAllQueueItemsAsync, deleteQueueItemAsync } from '../../database/sqli
 import { UploadQueueRecord, QueueStatus } from '../../database/schema';
 import { useQueue } from '../../context/QueueContext';
 import { LiveQueueBar } from '../../components/LiveQueueBar';
+import { Colors } from '../../constants/colors';
 
 interface GroupedQueue {
   attendeeId: string;
@@ -120,29 +121,29 @@ export default function QueueScreen() {
       case 'pending':
         return (
           <View style={[styles.badge, styles.badgePending]}>
-            <Ionicons name="time-outline" size={12} color="#F59E0B" />
-            <Text style={[styles.badgeText, { color: '#F59E0B' }]}>Pending</Text>
+            <Ionicons name="time-outline" size={12} color={Colors.warning} />
+            <Text style={[styles.badgeText, { color: Colors.warning }]}>Pending</Text>
           </View>
         );
       case 'uploading':
         return (
           <View style={[styles.badge, styles.badgeUploading]}>
-            <ActivityIndicator size="small" color="#3B82F6" style={{ transform: [{ scale: 0.7 }] }} />
-            <Text style={[styles.badgeText, { color: '#3B82F6' }]}>Uploading</Text>
+            <ActivityIndicator size="small" color={Colors.primaryLight} style={{ transform: [{ scale: 0.7 }] }} />
+            <Text style={[styles.badgeText, { color: Colors.primaryLight }]}>Uploading</Text>
           </View>
         );
       case 'completed':
         return (
           <View style={[styles.badge, styles.badgeCompleted]}>
-            <Ionicons name="checkmark-circle" size={12} color="#10B981" />
-            <Text style={[styles.badgeText, { color: '#10B981' }]}>Completed</Text>
+            <Ionicons name="checkmark-circle" size={12} color={Colors.success} />
+            <Text style={[styles.badgeText, { color: Colors.success }]}>Completed</Text>
           </View>
         );
       case 'failed':
         return (
           <View style={[styles.badge, styles.badgeFailed]}>
-            <Ionicons name="alert-circle" size={12} color="#EF4444" />
-            <Text style={[styles.badgeText, { color: '#EF4444' }]}>
+            <Ionicons name="alert-circle" size={12} color={Colors.error} />
+            <Text style={[styles.badgeText, { color: Colors.error }]}>
               Failed ({retries})
             </Text>
           </View>
@@ -175,7 +176,7 @@ export default function QueueScreen() {
           onPress={handleManualSync}
           disabled={!isOnline}
         >
-          <Ionicons name="sync-outline" size={16} color="#FFFFFF" />
+          <Ionicons name="sync-outline" size={16} color={Colors.textPrimary} />
           <Text style={styles.actionBtnText}>Sync Now</Text>
         </TouchableOpacity>
 
@@ -187,10 +188,10 @@ export default function QueueScreen() {
             disabled={isActionLoading}
           >
             {isActionLoading ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={Colors.textPrimary} />
             ) : (
               <>
-                <Ionicons name="refresh-outline" size={16} color="#FFFFFF" />
+                <Ionicons name="refresh-outline" size={16} color={Colors.textPrimary} />
                 <Text style={styles.actionBtnText}>Retry ({stats.failed})</Text>
               </>
             )}
@@ -203,8 +204,8 @@ export default function QueueScreen() {
             style={[styles.actionBtn, styles.clearBtn]}
             onPress={handleClearCompleted}
           >
-            <Ionicons name="trash-outline" size={16} color="#94A3B8" />
-            <Text style={[styles.actionBtnText, { color: '#94A3B8' }]}>Clear Done</Text>
+            <Ionicons name="trash-outline" size={16} color={Colors.textSecondary} />
+            <Text style={[styles.actionBtnText, { color: Colors.textSecondary }]}>Clear Done</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -218,12 +219,12 @@ export default function QueueScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={onRefresh}
-            tintColor="#3B82F6"
+            tintColor={Colors.primaryLight}
           />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Ionicons name="images-outline" size={56} color="#334155" />
+            <Ionicons name="images-outline" size={56} color={Colors.textMuted} />
             <Text style={styles.emptyTitle}>No Photos in Queue</Text>
             <Text style={styles.emptyDescription}>
               Photos captured in the booth will appear here and upload automatically to Google Drive.
@@ -238,7 +239,7 @@ export default function QueueScreen() {
                 <Ionicons
                   name={group.attendeeId === 'no_id' ? 'people-outline' : 'ticket-outline'}
                   size={18}
-                  color={group.attendeeId === 'no_id' ? '#64748B' : '#60A5FA'}
+                  color={group.attendeeId === 'no_id' ? Colors.textMuted : Colors.primaryLight}
                 />
                 <Text style={styles.groupTitle}>
                   {group.attendeeId === 'no_id'
@@ -299,7 +300,7 @@ export default function QueueScreen() {
                     style={styles.deleteButton}
                     onPress={() => handleDeleteItem(photo.id)}
                   >
-                    <Ionicons name="close" size={18} color="#64748B" />
+                    <Ionicons name="close" size={18} color={Colors.textMuted} />
                   </TouchableOpacity>
                 </View>
               );
@@ -314,7 +315,7 @@ export default function QueueScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0F1D',
+    backgroundColor: Colors.background,
   },
   header: {
     paddingHorizontal: 20,
@@ -324,11 +325,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     marginTop: 2,
   },
   queueBarBox: {
@@ -352,17 +353,19 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   syncBtn: {
-    backgroundColor: '#2563EB',
+    backgroundColor: Colors.primary,
   },
   retryBtn: {
-    backgroundColor: '#DC2626',
+    backgroundColor: Colors.error,
   },
   clearBtn: {
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
+    borderWidth: 1,
+    borderColor: Colors.border,
     marginLeft: 'auto',
   },
   actionBtnText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 13,
     fontWeight: '700',
   },
@@ -379,31 +382,33 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     marginTop: 14,
   },
   emptyDescription: {
     fontSize: 13,
-    color: '#64748B',
+    color: Colors.textSecondary,
     textAlign: 'center',
     marginTop: 6,
     lineHeight: 18,
   },
   groupCard: {
-    backgroundColor: '#131D31',
+    backgroundColor: Colors.card,
     borderRadius: 16,
     marginBottom: 14,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#1E293B',
+    borderColor: Colors.border,
   },
   groupHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
     paddingVertical: 10,
     paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   groupHeaderLeft: {
     flexDirection: 'row',
@@ -411,18 +416,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   groupTitle: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 14,
     fontWeight: '700',
   },
   groupCountBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.primaryGlow,
     paddingVertical: 2,
     paddingHorizontal: 8,
     borderRadius: 8,
   },
   groupCountText: {
-    color: '#94A3B8',
+    color: Colors.primaryLight,
     fontSize: 11,
     fontWeight: '600',
   },
@@ -431,25 +436,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
+    borderBottomColor: Colors.border,
   },
   thumbnail: {
     width: 60,
     height: 60,
     borderRadius: 10,
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
   },
   photoInfo: {
     flex: 1,
     marginLeft: 12,
   },
   photoFileName: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 13,
     fontWeight: '600',
   },
   photoTime: {
-    color: '#64748B',
+    color: Colors.textMuted,
     fontSize: 11,
     marginTop: 2,
   },
@@ -468,16 +473,16 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   badgePending: {
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: Colors.warningBg,
   },
   badgeUploading: {
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+    backgroundColor: Colors.primaryGlow,
   },
   badgeCompleted: {
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    backgroundColor: Colors.successBg,
   },
   badgeFailed: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    backgroundColor: Colors.errorBg,
   },
   badgeText: {
     fontSize: 11,
@@ -485,11 +490,11 @@ const styles = StyleSheet.create({
   },
   folderTag: {
     fontSize: 10,
-    color: '#64748B',
+    color: Colors.textMuted,
   },
   errorText: {
     fontSize: 10,
-    color: '#F87171',
+    color: Colors.error,
     marginTop: 4,
   },
   deleteButton: {

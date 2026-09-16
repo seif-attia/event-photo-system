@@ -23,6 +23,7 @@ import {
   clearPrecreatedFoldersAsync,
 } from '../database/sqlite';
 import { PrecreatedFolderRecord } from '../database/schema';
+import { Colors } from '../constants/colors';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -164,13 +165,13 @@ export default function SettingsScreen() {
       {/* Google Account & Switch Session */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Ionicons name="person-circle-outline" size={20} color="#38BDF8" />
+          <Ionicons name="person-circle-outline" size={20} color={Colors.primaryLight} />
           <Text style={styles.cardTitle}>Google Account & Staff Session</Text>
         </View>
 
         <View style={styles.accountRow}>
           <View style={styles.accountAvatar}>
-            <Ionicons name="person" size={20} color="#60A5FA" />
+            <Ionicons name="person" size={20} color={Colors.primaryLight} />
           </View>
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={styles.accountName}>{user?.name || 'Event Staff'}</Text>
@@ -182,7 +183,7 @@ export default function SettingsScreen() {
 
         {/* Prominent Sign Out / Switch Account Button */}
         <TouchableOpacity style={styles.switchAccountBtn} onPress={handleSignOut}>
-          <Ionicons name="log-out-outline" size={18} color="#EF4444" />
+          <Ionicons name="log-out-outline" size={18} color={Colors.error} />
           <Text style={styles.switchAccountBtnText}>Sign Out / Switch Google Account</Text>
         </TouchableOpacity>
       </View>
@@ -190,13 +191,13 @@ export default function SettingsScreen() {
       {/* Google Drive Parent Folder Section */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Ionicons name="folder" size={20} color="#3B82F6" />
+          <Ionicons name="folder" size={20} color={Colors.primaryLight} />
           <Text style={styles.cardTitle}>Google Drive Event Storage</Text>
         </View>
 
         {/* Active Folder Badge */}
         <View style={styles.activeFolderBadge}>
-          <Ionicons name="checkmark-circle" size={20} color="#10B981" />
+          <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
           <View style={{ flex: 1, marginLeft: 8 }}>
             <Text style={styles.activeFolderLabel}>CURRENT DESTINATION FOLDER</Text>
             <Text style={styles.activeFolderName} numberOfLines={1}>
@@ -213,7 +214,7 @@ export default function SettingsScreen() {
           style={styles.browseButton}
           onPress={() => setShowFolderPicker(true)}
         >
-          <Ionicons name="folder-open" size={18} color="#FFFFFF" />
+          <Ionicons name="folder-open" size={18} color={Colors.textPrimary} />
           <Text style={styles.browseButtonText}>Browse & Select Drive Folder</Text>
         </TouchableOpacity>
 
@@ -226,7 +227,7 @@ export default function SettingsScreen() {
           value={parentFolderInput}
           onChangeText={setParentFolderInput}
           placeholder="e.g. 1a2b3c4d5e... or 'root'"
-          placeholderTextColor="#64748B"
+          placeholderTextColor={Colors.textMuted}
           autoCapitalize="none"
           autoCorrect={false}
         />
@@ -238,10 +239,10 @@ export default function SettingsScreen() {
           disabled={isTestingConnection}
         >
           {isTestingConnection ? (
-            <ActivityIndicator size="small" color="#3B82F6" />
+            <ActivityIndicator size="small" color={Colors.primaryLight} />
           ) : (
             <>
-              <Ionicons name="cloud-done-outline" size={16} color="#3B82F6" />
+              <Ionicons name="cloud-done-outline" size={16} color={Colors.primaryLight} />
               <Text style={styles.testButtonText}>Test Folder Connection</Text>
             </>
           )}
@@ -257,12 +258,12 @@ export default function SettingsScreen() {
             <Ionicons
               name={testResult.success ? 'checkmark-circle' : 'alert-circle'}
               size={18}
-              color={testResult.success ? '#10B981' : '#EF4444'}
+              color={testResult.success ? Colors.success : Colors.error}
             />
             <Text
               style={[
                 styles.resultText,
-                { color: testResult.success ? '#A7F3D0' : '#FCA5A5' },
+                { color: testResult.success ? Colors.success : Colors.error },
               ]}
             >
               {testResult.message}
@@ -274,7 +275,7 @@ export default function SettingsScreen() {
       {/* Pre-Created Attendee Folders Directory */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Ionicons name="people-outline" size={20} color="#10B981" />
+          <Ionicons name="people-outline" size={20} color={Colors.primaryLight} />
           <Text style={styles.cardTitle}>Pre-Created Attendee Folders</Text>
         </View>
         <Text style={styles.hint}>
@@ -282,7 +283,7 @@ export default function SettingsScreen() {
         </Text>
 
         <View style={styles.cachedFolderBanner}>
-          <Ionicons name="server" size={18} color="#60A5FA" />
+          <Ionicons name="server" size={18} color={Colors.primaryLight} />
           <Text style={styles.cachedFolderCountText}>
             {folderCount} folder(s) cached locally in SQLite
           </Text>
@@ -293,9 +294,9 @@ export default function SettingsScreen() {
             <Text style={styles.previewTitle}>Sample Cached Folders:</Text>
             {previewFolders.map(f => (
               <View key={f.drive_folder_id} style={styles.previewItem}>
-                <Ionicons name="folder-outline" size={14} color="#94A3B8" />
+                <Ionicons name="folder-outline" size={14} color={Colors.textMuted} />
                 <Text style={styles.previewText} numberOfLines={1}>
-                  {f.folder_name} <Text style={{ color: '#60A5FA' }}>(#{f.numeric_id})</Text>
+                  {f.folder_name} <Text style={{ color: Colors.primaryLight }}>(#{f.numeric_id})</Text>
                 </Text>
               </View>
             ))}
@@ -308,10 +309,10 @@ export default function SettingsScreen() {
           disabled={isSyncingFolders}
         >
           {isSyncingFolders ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
+            <ActivityIndicator size="small" color={Colors.textPrimary} />
           ) : (
             <>
-              <Ionicons name="sync-outline" size={18} color="#FFFFFF" />
+              <Ionicons name="sync-outline" size={18} color={Colors.textPrimary} />
               <Text style={styles.syncFoldersButtonText}>Sync Folders from Google Drive</Text>
             </>
           )}
@@ -321,7 +322,7 @@ export default function SettingsScreen() {
       {/* Sync Engine Concurrency */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Ionicons name="speedometer-outline" size={20} color="#F59E0B" />
+          <Ionicons name="speedometer-outline" size={20} color={Colors.primaryLight} />
           <Text style={styles.cardTitle}>Upload Concurrency</Text>
         </View>
         <Text style={styles.hint}>
@@ -353,19 +354,19 @@ export default function SettingsScreen() {
       {/* Database Maintenance */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Ionicons name="trash-outline" size={20} color="#EC4899" />
+          <Ionicons name="trash-outline" size={20} color={Colors.error} />
           <Text style={styles.cardTitle}>Cache Maintenance</Text>
         </View>
 
         <TouchableOpacity style={styles.dangerButton} onPress={handleClearPrecreatedFolders}>
-          <Ionicons name="trash-bin-outline" size={16} color="#F43F5E" />
+          <Ionicons name="trash-bin-outline" size={16} color={Colors.error} />
           <Text style={styles.dangerButtonText}>Clear Pre-Created Folders Cache</Text>
         </TouchableOpacity>
       </View>
 
       {/* Save Button */}
       <TouchableOpacity style={styles.saveButton} onPress={handleSaveSettings}>
-        <Ionicons name="save-outline" size={20} color="#FFFFFF" />
+        <Ionicons name="save-outline" size={20} color={Colors.textPrimary} />
         <Text style={styles.saveButtonText}>Save Configuration</Text>
       </TouchableOpacity>
 
@@ -384,19 +385,19 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0F1D',
+    backgroundColor: Colors.background,
   },
   content: {
     padding: 20,
     paddingBottom: 40,
   },
   card: {
-    backgroundColor: '#131D31',
+    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 18,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#1E293B',
+    borderColor: Colors.border,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -407,126 +408,126 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
   },
   accountRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.cardElevated,
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#1E293B',
+    borderColor: Colors.border,
   },
   accountAvatar: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardHover,
     justifyContent: 'center',
     alignItems: 'center',
   },
   accountName: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
   },
   accountEmail: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     marginTop: 2,
   },
   switchAccountBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: Colors.errorBg,
     borderRadius: 10,
     paddingVertical: 10,
     gap: 6,
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.25)',
+    borderColor: 'rgba(244, 63, 94, 0.3)',
   },
   switchAccountBtnText: {
-    color: '#EF4444',
+    color: Colors.error,
     fontSize: 13,
     fontWeight: '700',
   },
   activeFolderBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    backgroundColor: Colors.successBg,
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.25)',
+    borderColor: 'rgba(16, 185, 129, 0.3)',
   },
   activeFolderLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#34D399',
+    color: Colors.success,
     letterSpacing: 0.5,
   },
   activeFolderName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     marginTop: 2,
   },
   browseButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2563EB',
+    backgroundColor: Colors.primary,
     borderRadius: 10,
     paddingVertical: 12,
     marginBottom: 14,
     gap: 8,
   },
   browseButtonText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 14,
     fontWeight: '700',
   },
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#CBD5E1',
+    color: Colors.textSecondary,
     marginTop: 10,
     marginBottom: 4,
   },
   hint: {
     fontSize: 12,
-    color: '#64748B',
+    color: Colors.textMuted,
     lineHeight: 16,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.cardElevated,
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 14,
     borderWidth: 1,
-    borderColor: '#1E293B',
+    borderColor: Colors.border,
   },
   testButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(59, 130, 246, 0.12)',
+    backgroundColor: Colors.primaryGlow,
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 12,
     gap: 6,
     borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.25)',
+    borderColor: Colors.borderLight,
   },
   testButtonText: {
-    color: '#3B82F6',
+    color: Colors.primaryLight,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -539,10 +540,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   resultSuccess: {
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    backgroundColor: Colors.successBg,
   },
   resultError: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    backgroundColor: Colors.errorBg,
   },
   resultText: {
     fontSize: 12,
@@ -552,26 +553,26 @@ const styles = StyleSheet.create({
   cachedFolderBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: Colors.primaryGlow,
     padding: 12,
     borderRadius: 10,
     gap: 8,
     marginVertical: 10,
   },
   cachedFolderCountText: {
-    color: '#93C5FD',
+    color: Colors.primaryLight,
     fontSize: 13,
     fontWeight: '700',
   },
   previewList: {
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.cardElevated,
     borderRadius: 10,
     padding: 10,
     marginBottom: 12,
   },
   previewTitle: {
     fontSize: 11,
-    color: '#64748B',
+    color: Colors.textMuted,
     fontWeight: '700',
     textTransform: 'uppercase',
     marginBottom: 6,
@@ -583,11 +584,11 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   previewText: {
-    color: '#CBD5E1',
+    color: Colors.textSecondary,
     fontSize: 12,
   },
   syncFoldersButton: {
-    backgroundColor: '#2563EB',
+    backgroundColor: Colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -596,7 +597,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   syncFoldersButtonText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 14,
     fontWeight: '700',
   },
@@ -607,45 +608,45 @@ const styles = StyleSheet.create({
   },
   concurrencyButton: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.cardElevated,
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#1E293B',
+    borderColor: Colors.border,
   },
   concurrencyButtonActive: {
-    backgroundColor: '#2563EB',
-    borderColor: '#3B82F6',
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primaryLight,
   },
   concurrencyText: {
-    color: '#94A3B8',
+    color: Colors.textMuted,
     fontSize: 13,
     fontWeight: '600',
   },
   concurrencyTextActive: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontWeight: '700',
   },
   dangerButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(244, 63, 94, 0.1)',
+    backgroundColor: Colors.errorBg,
     paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(244, 63, 94, 0.25)',
+    borderColor: 'rgba(244, 63, 94, 0.3)',
     gap: 8,
     marginTop: 8,
   },
   dangerButtonText: {
-    color: '#F43F5E',
+    color: Colors.error,
     fontSize: 13,
     fontWeight: '600',
   },
   saveButton: {
-    backgroundColor: '#10B981',
+    backgroundColor: Colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -655,7 +656,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   saveButtonText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 16,
     fontWeight: '700',
   },

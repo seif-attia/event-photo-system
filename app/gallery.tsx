@@ -17,6 +17,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getAllQueueItemsAsync } from '../database/sqlite';
 import { UploadQueueRecord, QueueStatus } from '../database/schema';
+import { Colors } from '../constants/colors';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const GRID_SPACING = 3;
@@ -323,13 +324,13 @@ export default function GalleryScreen() {
   const renderStatusIcon = (status: QueueStatus) => {
     switch (status) {
       case 'completed':
-        return <Ionicons name="checkmark-circle" size={14} color="#10B981" />;
+        return <Ionicons name="checkmark-circle" size={14} color={Colors.success} />;
       case 'uploading':
-        return <ActivityIndicator size="small" color="#3B82F6" style={{ transform: [{ scale: 0.6 }] }} />;
+        return <ActivityIndicator size="small" color={Colors.primaryLight} style={{ transform: [{ scale: 0.6 }] }} />;
       case 'pending':
-        return <Ionicons name="time" size={14} color="#F59E0B" />;
+        return <Ionicons name="time" size={14} color={Colors.warning} />;
       case 'failed':
-        return <Ionicons name="alert-circle" size={14} color="#EF4444" />;
+        return <Ionicons name="alert-circle" size={14} color={Colors.error} />;
     }
   };
 
@@ -339,7 +340,7 @@ export default function GalleryScreen() {
       <SafeAreaView style={styles.safeHeader} edges={['top']}>
         <View style={styles.headerRow}>
           <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <Ionicons name="chevron-back" size={22} color="#FFFFFF" />
+            <Ionicons name="chevron-back" size={22} color={Colors.textPrimary} />
             <Text style={styles.backButtonText}>Camera</Text>
           </TouchableOpacity>
 
@@ -351,7 +352,7 @@ export default function GalleryScreen() {
           </View>
 
           <TouchableOpacity style={styles.refreshBtn} onPress={loadPhotos}>
-            <Ionicons name="refresh" size={18} color="#94A3B8" />
+            <Ionicons name="refresh" size={18} color={Colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -380,12 +381,12 @@ export default function GalleryScreen() {
       {/* Grid Content */}
       {isLoading ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+          <ActivityIndicator size="large" color={Colors.primaryLight} />
           <Text style={styles.loadingText}>Loading photos...</Text>
         </View>
       ) : displayedItems.length === 0 ? (
         <View style={styles.centered}>
-          <Ionicons name="images-outline" size={54} color="#475569" />
+          <Ionicons name="images-outline" size={54} color={Colors.textMuted} />
           <Text style={styles.emptyTitle}>No Photos Found</Text>
           <Text style={styles.emptySubtitle}>
             {activeTab === 'current'
@@ -502,12 +503,12 @@ export default function GalleryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0F1D',
+    backgroundColor: Colors.background,
   },
   safeHeader: {
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
+    borderBottomColor: Colors.border,
   },
   headerRow: {
     flexDirection: 'row',
@@ -524,7 +525,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   backButtonText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 14,
     fontWeight: '700',
   },
@@ -533,19 +534,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 16,
     fontWeight: '800',
   },
   headerSubtitle: {
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     fontSize: 11,
     marginTop: 2,
   },
   refreshBtn: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   tabContainer: {
     flexDirection: 'row',
@@ -558,18 +561,21 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: 'center',
     borderRadius: 10,
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   tabButtonActive: {
-    backgroundColor: '#2563EB',
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primaryLight,
   },
   tabText: {
-    color: '#94A3B8',
+    color: Colors.textMuted,
     fontSize: 12,
     fontWeight: '700',
   },
   tabTextActive: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
   },
   centered: {
     flex: 1,
@@ -578,18 +584,18 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   loadingText: {
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     fontSize: 13,
     marginTop: 12,
   },
   emptyTitle: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 18,
     fontWeight: '700',
     marginTop: 14,
   },
   emptySubtitle: {
-    color: '#64748B',
+    color: Colors.textSecondary,
     fontSize: 13,
     textAlign: 'center',
     marginTop: 6,
@@ -604,7 +610,7 @@ const styles = StyleSheet.create({
     margin: GRID_SPACING / 2,
     borderRadius: 8,
     overflow: 'hidden',
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
   },
   gridImage: {
     width: '100%',
@@ -614,7 +620,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 4,
     right: 4,
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    backgroundColor: 'rgba(21, 11, 40, 0.85)',
     borderRadius: 10,
     padding: 3,
   },
@@ -625,7 +631,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.96)',
+    backgroundColor: 'rgba(11, 6, 22, 0.96)',
     zIndex: 100,
   },
   inspectorSafe: {
@@ -644,7 +650,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   inspectorBackText: {
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -654,13 +660,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
   },
   inspectorTitle: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 15,
     fontWeight: '700',
     textAlign: 'center',
   },
   inspectorPageCounter: {
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     fontSize: 11,
     fontWeight: '600',
     marginTop: 2,
@@ -669,9 +675,11 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: Colors.cardElevated,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   imageContainer: {
     flex: 1,
@@ -689,20 +697,20 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   zoomHintText: {
-    color: '#64748B',
+    color: Colors.textMuted,
     fontSize: 11,
     marginTop: 8,
     textAlign: 'center',
   },
   inspectorInfoCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
     marginHorizontal: 16,
     marginBottom: 10,
     borderRadius: 14,
     padding: 14,
     gap: 8,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: Colors.border,
   },
   inspectorInfoRow: {
     flexDirection: 'row',
@@ -710,12 +718,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inspectorInfoLabel: {
-    color: '#94A3B8',
+    color: Colors.textMuted,
     fontSize: 12,
     fontWeight: '600',
   },
   inspectorInfoVal: {
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
     fontSize: 12,
     fontWeight: '700',
   },

@@ -23,6 +23,7 @@ import { PrecreatedFolderRecord } from '../../database/schema';
 import { useQueue } from '../../context/QueueContext';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
+import { Colors } from '../../constants/colors';
 
 export default function SessionScreen() {
   const router = useRouter();
@@ -254,7 +255,7 @@ export default function SessionScreen() {
             onPress={() => router.push('/settings')}
             accessibilityLabel="Settings"
           >
-            <Ionicons name="settings-outline" size={20} color="#94A3B8" />
+            <Ionicons name="settings-outline" size={20} color={Colors.textSecondary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -270,7 +271,7 @@ export default function SessionScreen() {
         {/* Drive Folders Status Pill */}
         <View style={styles.driveStatusCard}>
           <View style={styles.driveStatusLeft}>
-            <Ionicons name="folder-open" size={20} color="#3B82F6" />
+            <Ionicons name="folder-open" size={20} color={Colors.primaryLight} />
             <View style={{ marginLeft: 10, flex: 1 }}>
               <Text style={styles.driveStatusTitle} numberOfLines={1}>
                 {settings.parentFolderName || 'Google Drive Pre-created Folders'}
@@ -323,7 +324,7 @@ export default function SessionScreen() {
             <Ionicons
               name={isLocked ? 'lock-closed' : 'keypad'}
               size={22}
-              color={isLocked ? '#F59E0B' : '#3B82F6'}
+              color={isLocked ? Colors.warning : Colors.primaryLight}
               style={{ marginRight: 6 }}
             />
             <View style={styles.numericDisplayCenter}>
@@ -360,7 +361,7 @@ export default function SessionScreen() {
           {matchedFolder ? (
             <View style={styles.matchCard}>
               <View style={styles.matchIconCircle}>
-                <Ionicons name="checkmark-circle" size={26} color="#10B981" />
+                <Ionicons name="checkmark-circle" size={26} color={Colors.success} />
               </View>
               <View style={styles.matchDetails}>
                 <View style={styles.matchHeaderRow}>
@@ -368,7 +369,7 @@ export default function SessionScreen() {
                     {matchedFolder.attendee_name || 'Matched Attendee'}
                   </Text>
                   <View style={styles.verifiedBadge}>
-                    <Ionicons name="shield-checkmark" size={11} color="#10B981" />
+                    <Ionicons name="shield-checkmark" size={11} color={Colors.success} />
                     <Text style={styles.verifiedBadgeText}>DRIVE READY</Text>
                   </View>
                 </View>
@@ -379,7 +380,7 @@ export default function SessionScreen() {
                 </View>
 
                 <View style={styles.targetFolderRow}>
-                  <Ionicons name="folder" size={13} color="#60A5FA" />
+                  <Ionicons name="folder" size={13} color={Colors.primaryLight} />
                   <Text style={styles.targetFolderName} numberOfLines={1}>
                     {matchedFolder.folder_name}
                   </Text>
@@ -396,7 +397,7 @@ export default function SessionScreen() {
                     style={styles.suggestionChip}
                     onPress={() => handleSelectSuggestion(s)}
                   >
-                    <Ionicons name="person-circle-outline" size={16} color="#3B82F6" />
+                    <Ionicons name="person-circle-outline" size={16} color={Colors.primaryLight} />
                     <Text style={styles.suggestionChipText}>
                       {s.attendee_name} ({s.numeric_id || s.raw_id})
                     </Text>
@@ -406,14 +407,14 @@ export default function SessionScreen() {
             </View>
           ) : numericIdInput.trim().length >= 3 && !matchedFolder && !isSkipped ? (
             <View style={styles.unmatchedNotice}>
-              <Ionicons name="alert-circle-outline" size={18} color="#F59E0B" />
+              <Ionicons name="alert-circle-outline" size={18} color={Colors.warning} />
               <Text style={styles.unmatchedNoticeText}>
                 No folder found for &quot;{numericIdInput}&quot;. Photos will upload with ID #{numericIdInput}.
               </Text>
             </View>
           ) : isSkipped ? (
             <View style={styles.skippedNotice}>
-              <Ionicons name="images-outline" size={18} color="#3B82F6" />
+              <Ionicons name="images-outline" size={18} color={Colors.primaryLight} />
               <Text style={styles.skippedNoticeText}>
                 General Shot Session active. Photos will be saved under General / no ID.
               </Text>
@@ -495,7 +496,7 @@ export default function SessionScreen() {
                 <Ionicons
                   name={isLocked ? 'lock-closed' : 'lock-open-outline'}
                   size={18}
-                  color={isLocked ? '#F59E0B' : '#94A3B8'}
+                  color={isLocked ? Colors.warning : Colors.textSecondary}
                 />
                 <Text style={styles.optionLabel}>Lock Session</Text>
               </View>
@@ -511,8 +512,8 @@ export default function SessionScreen() {
                 } catch {}
                 setIsLocked(val);
               }}
-              trackColor={{ false: '#334155', true: '#2563EB' }}
-              thumbColor={isLocked ? '#60A5FA' : '#94A3B8'}
+              trackColor={{ false: Colors.border, true: Colors.primaryDark }}
+              thumbColor={isLocked ? Colors.primaryLight : Colors.textSecondary}
             />
           </View>
 
@@ -526,7 +527,7 @@ export default function SessionScreen() {
             <Ionicons
               name={isSkipped ? 'checkmark-circle' : 'images-outline'}
               size={18}
-              color={isSkipped ? '#10B981' : '#94A3B8'}
+              color={isSkipped ? Colors.success : Colors.textSecondary}
             />
             <Text style={[styles.skipButtonText, isSkipped && styles.skipButtonTextActive]}>
               {isSkipped ? 'General Shots Mode Active' : 'Skip ID / General Shots'}
@@ -575,7 +576,7 @@ export default function SessionScreen() {
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.background,
   },
   headerBar: {
     flexDirection: 'row',
@@ -584,18 +585,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
-    backgroundColor: '#0F172A',
+    borderBottomColor: Colors.border,
+    backgroundColor: Colors.card,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
     letterSpacing: 0.3,
   },
   headerSubtitle: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     marginTop: 2,
   },
   headerActions: {
@@ -606,7 +607,7 @@ const styles = StyleSheet.create({
   networkBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -625,7 +626,7 @@ const styles = StyleSheet.create({
   settingsIconBtn: {
     padding: 6,
     borderRadius: 8,
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.cardElevated,
   },
   scrollView: {
     flex: 1,
@@ -638,12 +639,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.card,
     borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: Colors.border,
   },
   driveStatusLeft: {
     flexDirection: 'row',
@@ -653,17 +654,17 @@ const styles = StyleSheet.create({
   driveStatusTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
   },
   driveStatusSubtitle: {
     fontSize: 11,
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     marginTop: 2,
   },
   syncButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2563EB',
+    backgroundColor: Colors.primaryDark,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -675,11 +676,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   inputCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.card,
     borderRadius: 18,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: Colors.border,
   },
   inputHeaderRow: {
     flexDirection: 'row',
@@ -690,7 +691,7 @@ const styles = StyleSheet.create({
   inputSectionLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     letterSpacing: 1.0,
   },
   clearInlineBtn: {
@@ -700,17 +701,17 @@ const styles = StyleSheet.create({
   },
   clearInlineText: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     fontWeight: '600',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.cardElevated,
     borderRadius: 12,
     paddingHorizontal: 14,
     borderWidth: 1.5,
-    borderColor: '#3B82F6',
+    borderColor: Colors.primary,
     height: 56,
   },
   inputWrapperLocked: {
@@ -733,14 +734,14 @@ const styles = StyleSheet.create({
     color: '#F59E0B',
   },
   numericInputPlaceholder: {
-    color: '#64748B',
+    color: Colors.textMuted,
     fontSize: 18,
     fontWeight: '500',
     letterSpacing: 0.5,
     textAlign: 'center',
   },
   numericInputSkipped: {
-    color: '#60A5FA',
+    color: Colors.primaryLight,
     fontSize: 15,
     fontWeight: '700',
     letterSpacing: 0.5,
@@ -825,7 +826,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     marginTop: 6,
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+    backgroundColor: Colors.primaryGlow,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -833,7 +834,7 @@ const styles = StyleSheet.create({
   targetFolderName: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#93C5FD',
+    color: Colors.primaryLight,
     flex: 1,
   },
   suggestionsContainer: {
@@ -842,7 +843,7 @@ const styles = StyleSheet.create({
   suggestionsHeader: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     marginBottom: 8,
     textTransform: 'uppercase',
   },
@@ -854,18 +855,18 @@ const styles = StyleSheet.create({
   suggestionChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.cardElevated,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#3B82F6',
+    borderColor: Colors.primary,
     gap: 6,
   },
   suggestionChipText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#E2E8F0',
+    color: Colors.textPrimary,
   },
   unmatchedNotice: {
     flexDirection: 'row',
@@ -885,7 +886,7 @@ const styles = StyleSheet.create({
   skippedNotice: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(59, 130, 246, 0.12)',
+    backgroundColor: Colors.primaryGlow,
     borderRadius: 10,
     padding: 10,
     marginTop: 12,
@@ -893,16 +894,16 @@ const styles = StyleSheet.create({
   },
   skippedNoticeText: {
     fontSize: 12,
-    color: '#93C5FD',
+    color: Colors.primaryLight,
     flex: 1,
     lineHeight: 16,
   },
   keypadCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.card,
     borderRadius: 18,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: Colors.border,
     gap: 10,
   },
   keypadRow: {
@@ -912,12 +913,12 @@ const styles = StyleSheet.create({
   keypadKey: {
     flex: 1,
     height: 52,
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.cardElevated,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: Colors.border,
   },
   keypadKeyDisabled: {
     opacity: 0.4,
@@ -925,23 +926,24 @@ const styles = StyleSheet.create({
   keypadKeyText: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: Colors.textPrimary,
   },
   keypadUtilityKey: {
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.card,
+    borderColor: Colors.border,
   },
   keypadUtilityText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     letterSpacing: 0.5,
   },
   optionsCard: {
-    backgroundColor: '#1E293B',
+    backgroundColor: Colors.card,
     borderRadius: 18,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: Colors.border,
   },
   optionRow: {
     flexDirection: 'row',
@@ -960,17 +962,17 @@ const styles = StyleSheet.create({
   optionLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#F8FAFC',
+    color: Colors.textPrimary,
   },
   optionDescription: {
     fontSize: 11,
-    color: '#94A3B8',
+    color: Colors.textSecondary,
     marginTop: 3,
     lineHeight: 15,
   },
   optionDivider: {
     height: 1,
-    backgroundColor: '#334155',
+    backgroundColor: Colors.border,
     marginVertical: 12,
   },
   skipButton: {
@@ -979,40 +981,40 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: '#0F172A',
+    backgroundColor: Colors.cardElevated,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: Colors.border,
     gap: 8,
   },
   skipButtonActive: {
-    borderColor: '#10B981',
-    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    borderColor: Colors.primaryLight,
+    backgroundColor: Colors.primaryGlow,
   },
   skipButtonText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: Colors.textSecondary,
   },
   skipButtonTextActive: {
-    color: '#10B981',
+    color: Colors.primaryLight,
     fontWeight: '700',
   },
   openCameraBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2563EB',
+    backgroundColor: Colors.primary,
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 20,
-    shadowColor: '#2563EB',
+    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 8,
     elevation: 5,
   },
   openCameraBtnSecondary: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.primaryDark,
   },
   openCameraBtnText: {
     fontSize: 16,
@@ -1029,7 +1031,7 @@ const styles = StyleSheet.create({
   },
   queueFooterText: {
     fontSize: 11,
-    color: '#64748B',
+    color: Colors.textMuted,
     fontWeight: '500',
   },
 });

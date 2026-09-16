@@ -6,9 +6,9 @@
     "orientation": "portrait",
     "icon": "./assets/eventphoto.png",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#0A0F1D",
+    "backgroundColor": "#0B0616",
     "androidNavigationBar": {
-      "backgroundColor": "#0F172A",
+      "backgroundColor": "#150B28",
       "barStyle": "light-content"
     },
     "ios": {
@@ -16,8 +16,8 @@
     },
     "android": {
       "package": "com.eventphotosystem.app",
-      "backgroundColor": "#0A0F1D",
-      "navigationBarColor": "#0F172A",
+      "backgroundColor": "#0B0616",
+      "navigationBarColor": "#150B28",
       "icon": "./assets/eventphoto.png",
       "predictiveBackGestureEnabled": false
     },
