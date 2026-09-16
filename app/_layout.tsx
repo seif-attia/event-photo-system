@@ -2,10 +2,13 @@ import React, { useEffect } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import * as WebBrowser from 'expo-web-browser';
 import { SettingsProvider } from '../context/SettingsContext';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { QueueProvider } from '../context/QueueContext';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
+
+WebBrowser.maybeCompleteAuthSession();
 
 import { ThemeProvider, DarkTheme } from 'expo-router/react-navigation';
 

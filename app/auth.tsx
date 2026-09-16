@@ -38,8 +38,6 @@ export default function AuthScreen() {
   const [folderCount, setFolderCount] = useState<number>(0);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [showFolderPicker, setShowFolderPicker] = useState<boolean>(false);
-  const [showClientIdModal, setShowClientIdModal] = useState<boolean>(false);
-  const [customClientId, setCustomClientId] = useState<string>(settings.webClientId || "");
 
   React.useEffect(() => {
     getPrecreatedFoldersCountAsync()
@@ -47,14 +45,21 @@ export default function AuthScreen() {
       .catch((e) => console.warn("Failed to load folder count:", e));
   }, []);
 
-  const handleGoogleSignIn = async (overrideClientId?: string) => {
+  const handleGoogleSignIn = async () => {
     setIsSigningIn(true);
     setErrorMessage(null);
     try {
-      const result = await signInWithGoogle(overrideClientId);
+      const result = await signInWithGoogle();
       if (!result.success) {
         if (result.error === "MISSING_CLIENT_ID") {
-          setShowClientIdModal(true);
+          Alert.alert(
+            "Google Sign-In Configuration",
+            "To connect to your personal Google Drive, a Google OAuth Web Client ID needs to be set in the project's .env file (EXPO_PUBLIC_GOOGLE_CLIENT_ID).\n\nWould you like to launch Sandbox / Dev Mode to test the camera booth now?",
+            [
+              { text: "Cancel", style: "cancel" },
+              { text: "Launch Sandbox Mode", onPress: handleDemoSignIn },
+            ],
+          );
         } else if (result.error) {
           setErrorMessage(result.error);
         }
@@ -67,15 +72,6 @@ export default function AuthScreen() {
     } finally {
       setIsSigningIn(false);
     }
-  };
-
-  const handleCustomClientIdSubmit = async () => {
-    if (!customClientId.trim()) {
-      Alert.alert("Missing Client ID", "Please enter your Google OAuth Client ID.");
-      return;
-    }
-    setShowClientIdModal(false);
-    await handleGoogleSignIn(customClientId.trim());
   };
 
   const handleDemoSignIn = async () => {
@@ -121,7 +117,7 @@ export default function AuthScreen() {
             text: "Open Booth",
             onPress: () => router.replace("/(tabs)"),
           },
-        ]
+        ],
       );
     } catch (e: any) {
       Alert.alert(
@@ -132,7 +128,7 @@ export default function AuthScreen() {
             text: "Open Booth",
             onPress: () => router.replace("/(tabs)"),
           },
-        ]
+        ],
       );
     }
   };
@@ -304,21 +300,6 @@ export default function AuthScreen() {
               event photos directly to the configured Google Drive folders.
             </Text>
 
-            {/* Permissions summary */}
-            <View style={styles.scopeNotice}>
-              <Ionicons
-                name="shield-checkmark-outline"
-                size={20}
-                color="#10B981"
-              />
-              <Text style={styles.scopeNoticeText}>
-                Requested scope:{" "}
-                <Text style={{ fontWeight: "700" }}>Google Drive File</Text>{" "}
-                (allows creating folders and storing photos captured in this
-                session).
-              </Text>
-            </View>
-
             {errorMessage && (
               <View style={styles.errorBox}>
                 <Ionicons name="warning-outline" size={18} color="#EF4444" />
@@ -383,70 +364,6 @@ export default function AuthScreen() {
         currentFolderId={settings.parentFolderId}
         currentFolderName={settings.parentFolderName}
       />
-
-      {/* Google OAuth Web Client ID Connect Modal */}
-      <Modal
-        visible={showClientIdModal}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowClientIdModal(false)}
-      >
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalCard}>
-            <View style={styles.modalHeaderRow}>
-              <Ionicons name="logo-google" size={24} color="#EA4335" />
-              <Text style={styles.modalTitle}>Connect Google Account</Text>
-            </View>
-            <Text style={styles.modalSubtitle}>
-              To connect directly to your personal Google Drive, enter your Google OAuth Client ID once below:
-            </Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="XXXXX.apps.googleusercontent.com"
-              placeholderTextColor="#64748B"
-              value={customClientId}
-              onChangeText={setCustomClientId}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            <TouchableOpacity
-              style={styles.modalPrimaryBtn}
-              onPress={handleCustomClientIdSubmit}
-              disabled={isSigningIn}
-            >
-              {isSigningIn ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <Text style={styles.modalPrimaryBtnText}>Connect & Sign In</Text>
-              )}
-            </TouchableOpacity>
-
-            <View style={styles.orDivider}>
-              <View style={styles.line} />
-              <Text style={styles.orText}>OR</Text>
-              <View style={styles.line} />
-            </View>
-
-            <TouchableOpacity
-              style={styles.modalSecondaryBtn}
-              onPress={() => {
-                setShowClientIdModal(false);
-                handleDemoSignIn();
-              }}
-            >
-              <Ionicons name="flask-outline" size={16} color="#60A5FA" />
-              <Text style={styles.modalSecondaryBtnText}>Use Instant Sandbox Mode Instead</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.modalCancelBtn}
-              onPress={() => setShowClientIdModal(false)}
-            >
-              <Text style={styles.modalCancelBtnText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 }

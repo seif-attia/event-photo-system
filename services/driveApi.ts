@@ -259,7 +259,11 @@ export async function resolveAttendeeFolderIdAsync(
   isDemo: boolean = false
 ): Promise<string> {
   const normalizedInput = attendeeId.trim() || 'no_id';
-  const cleanDigits = normalizedInput.replace(/\D/g, '');
+  const isGeneral =
+    normalizedInput.toLowerCase() === 'no_id' ||
+    normalizedInput.toLowerCase() === 'general' ||
+    normalizedInput === '';
+  const cleanDigits = isGeneral ? '' : normalizedInput.replace(/\D/g, '');
   const cacheKey = `${parentFolderId}::${cleanDigits || normalizedInput}`;
 
   // 1. In-memory cache
@@ -267,7 +271,35 @@ export async function resolveAttendeeFolderIdAsync(
     return inMemoryFolderCache.get(cacheKey)!;
   }
 
-  // 2. Query local SQLite pre-created folders table
+  // 2. Handling for General Shots (no_id)
+  if (isGeneral) {
+    // Check if there is a pre-created folder dedicated to general/misc photos
+    const generalMatch =
+      (await findFolderByNumericIdAsync('general')) ||
+      (await findFolderByNumericIdAsync('misc')) ||
+      (await findFolderByNumericIdAsync('no_id'));
+
+    if (generalMatch) {
+      inMemoryFolderCache.set(cacheKey, generalMatch.drive_folder_id);
+      await setCachedFolderIdAsync(cacheKey, generalMatch.drive_folder_id);
+      return generalMatch.drive_folder_id;
+    }
+
+    // If demo mode, generate demo folder
+    if (isDemo) {
+      const demoId = `demo_folder_general_${Date.now()}`;
+      inMemoryFolderCache.set(cacheKey, demoId);
+      return demoId;
+    }
+
+    // Default for General Shots: save directly into the event parent folder
+    const targetFolder = parentFolderId && parentFolderId.trim() ? parentFolderId.trim() : 'root';
+    inMemoryFolderCache.set(cacheKey, targetFolder);
+    await setCachedFolderIdAsync(cacheKey, targetFolder);
+    return targetFolder;
+  }
+
+  // 3. Query local SQLite pre-created folders table for specific attendee
   const localMatch = await findFolderByNumericIdAsync(cleanDigits || normalizedInput);
   if (localMatch) {
     inMemoryFolderCache.set(cacheKey, localMatch.drive_folder_id);
@@ -275,7 +307,7 @@ export async function resolveAttendeeFolderIdAsync(
     return localMatch.drive_folder_id;
   }
 
-  // 3. If in demo mode, generate or return general demo folder
+  // 4. If in demo mode, generate or return attendee demo folder
   if (isDemo) {
     const demoId = `demo_folder_${cleanDigits || 'general'}_${Date.now()}`;
     inMemoryFolderCache.set(cacheKey, demoId);

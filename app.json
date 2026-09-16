@@ -15,14 +15,10 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.eventphotosystem.app",
       "backgroundColor": "#0A0F1D",
       "navigationBarColor": "#0F172A",
-      "adaptiveIcon": {
-        "backgroundColor": "#0F172A",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
+      "icon": "./assets/eventphoto.png",
       "predictiveBackGestureEnabled": false
     },
     "web": {

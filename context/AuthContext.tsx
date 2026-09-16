@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import {
   GoogleUserProfile,
@@ -89,10 +91,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getClientId = (override?: string): string => {
     if (override && override.trim()) return override.trim();
-    if (Platform.OS === 'ios' && settings.iosClientId) return settings.iosClientId;
-    if (Platform.OS === 'android' && settings.androidClientId) return settings.androidClientId;
-    if (settings.webClientId) return settings.webClientId;
-    if (process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID) return process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
+    if (Platform.OS === 'android' && process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID) {
+      return process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID.trim();
+    }
+    if (process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID) return process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID.trim();
+    if (Constants.expoConfig?.extra?.googleClientId) return (Constants.expoConfig.extra.googleClientId as string).trim();
+    if (Platform.OS === 'ios' && settings.iosClientId) return settings.iosClientId.trim();
+    if (Platform.OS === 'android' && settings.androidClientId) return settings.androidClientId.trim();
+    if (settings.webClientId) return settings.webClientId.trim();
     return '';
   };
 
@@ -110,19 +116,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await updateSetting('webClientId', customClientId);
       }
 
-      const redirectUri = AuthSession.makeRedirectUri({
-        scheme: 'eventphotosystem',
-      });
+      const isExpoGo =
+        Constants.appOwnership === 'expo' ||
+        Constants.executionEnvironment === 'storeClient';
+
+      let redirectUri: string;
+      if (process.env.EXPO_PUBLIC_GOOGLE_REDIRECT_URI) {
+        redirectUri = process.env.EXPO_PUBLIC_GOOGLE_REDIRECT_URI.trim();
+      } else if (isExpoGo) {
+        redirectUri = 'https://auth.expo.io/@anonymous/EventPhotoSystem';
+      } else {
+        redirectUri = AuthSession.makeRedirectUri({
+          scheme: 'eventphotosystem',
+        });
+      }
+      console.log('[Auth] Google OAuth Redirect URI:', redirectUri);
 
       const request = new AuthSession.AuthRequest({
         clientId,
         scopes: GOOGLE_DRIVE_SCOPES,
         redirectUri,
         responseType: AuthSession.ResponseType.Token,
-        usePKCE: true,
+        usePKCE: false,
       });
 
-      const result = await request.promptAsync(GOOGLE_DISCOVERY);
+      let result: any;
+
+      if (isExpoGo) {
+        const googleAuthUrl = await request.makeAuthUrlAsync(GOOGLE_DISCOVERY);
+        const returnUrl = AuthSession.getDefaultReturnUrl();
+        const startUrl = `https://auth.expo.io/@anonymous/EventPhotoSystem/start?authUrl=${encodeURIComponent(
+          googleAuthUrl
+        )}&returnUrl=${encodeURIComponent(returnUrl)}`;
+
+        console.log('[Auth] Opening proxy start URL:', startUrl);
+        console.log('[Auth] Device return URL:', returnUrl);
+
+        const browserResult = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl);
+        if (browserResult.type === 'success' && (browserResult as any).url) {
+          result = request.parseReturnUrl((browserResult as any).url);
+        } else {
+          result = { type: browserResult.type };
+        }
+      } else {
+        result = await request.promptAsync(GOOGLE_DISCOVERY);
+      }
 
       if (result.type === 'success') {
         const accessToken = result.params.access_token;
