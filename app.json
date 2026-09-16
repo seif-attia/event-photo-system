@@ -4,14 +4,21 @@
     "slug": "EventPhotoSystem",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/eventphoto.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0A0F1D",
+    "androidNavigationBar": {
+      "backgroundColor": "#0F172A",
+      "barStyle": "light-content"
+    },
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "backgroundColor": "#0A0F1D",
+      "navigationBarColor": "#0F172A",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0F172A",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -20,6 +27,19 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "scheme": "eventphotosystem",
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-secure-store",
+      "expo-web-browser",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow EventPhotoSystem to access camera to take attendee photos."
+        }
+      ]
+    ]
   }
 }
