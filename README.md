@@ -1,56 +1,53 @@
 # Event Photo Booth System (Offline-First Expo Mobile App)
 
-A robust, offline-first mobile application built with **React Native**, **Expo SDK 57**, **TypeScript**, and **Expo Router** designed for event photo booths. It seamlessly captures high-resolution attendee photos and syncs them to Google Drive with automated folder categorization per attendee.
+A robust, offline-first mobile application built with **React Native**, **Expo**, **TypeScript**, and **Expo Router** designed for high-throughput event photo booths. It seamlessly captures high-resolution attendee photos, matches them to pre-created attendee folders, saves a fail-safe backup directly to the device's native camera roll (`DCIM/Camera`), and syncs images to Google Drive.
 
 ---
 
-## Key Features
+## Key Features & Architecture
 
-1. **Auth Gate Screen (`app/auth.tsx`)**
-   - OAuth 2.0 authentication with Google via `expo-auth-session`.
-   - Requesting `https://www.googleapis.com/auth/drive.file` scope.
-   - Encrypted token persistence (access token, refresh token, expiry) via `expo-secure-store`.
-   - Automatic token refresh on HTTP 401 responses.
-   - Live queue status indicator and staff profile card.
-   - **Sandbox / Demo Mode**: Full offline simulation mode for immediate evaluation without pre-configuring Google Cloud Console.
+### 1. Attendee Identification & Session Screen (`app/(tabs)/index.tsx`)
+- **Custom On-Screen Numeric Keypad:** Dedicated digits keypad preventing the mobile OS software keyboard from popping up and obstructing the screen, maximizing entry speed for high-volume booths.
+- **Intelligent Pre-Created Folder Matching:** Automatically parses Drive folder names like `"Rawda - KOT-89487"` into **Attendee Name** (`Rawda`), **Ticket Code** (`KOT-89487`), and **Numeric ID** (`89487`). Staff only needs to type numeric digits (`89487`) to match 100% offline.
+- **Real-Time Suggestions:** Live attendee match card with verified `"DRIVE READY"` badge and partial match chips as numbers are entered.
+- **Session Lock:** Toggle to lock an attendee session across multiple photo sets without retyping.
+- **Skip ID / General Shots:** One-tap mode for candid, crowd, or group photos without attendee tagging.
+- **Auto-Sync on Page Focus:** Silently syncs pre-created attendee folders from Google Drive whenever staff navigates back to the ID page (throttled to 15 seconds) over both Wi-Fi and Cellular.
 
-2. **Instantaneous Shutter & Capture Screen (`app/(tabs)/index.tsx`)**
-   - Full-screen camera interface powered by `expo-camera` (`CameraView`).
-   - Non-blocking capture: immediate white screen flash, counter increment, and camera readiness without delay.
-   - **Attendee ID & Locking**:
-     - Input field for attendee / ticket badge ID.
-     - "Lock Session / Set Active ID" toggle to photograph multiple shots for the same attendee without re-typing.
-     - "Skip ID / General Shot" toggle automatically defaulting to `"no_id"`.
-   - Local on-disk persistence via `expo-file-system` (`${documentDirectory}photos/${attendeeId}_${timestamp}.jpg`).
-   - SQLite queue insertion (`status = 'pending'`).
-   - Floating **Live Queue Bar** with live counts (`Pending | Syncing | Done | Failed`) and network state (`Online / Offline`).
+### 2. Pro Camera Capture Engine (`app/camera.tsx`)
+- Full-screen viewfinder powered by `expo-camera` (`CameraView`).
+- **Viewfinder Aspect Ratios:** Selectable framing ratios (`3:4`, `9:16`, `1:1`, and `Full`).
+- **Auto Aspect-Ratio Cropping:** Post-capture hardware image manipulation via `expo-image-manipulator` ensuring the saved photo matches the framed viewfinder ratio.
+- **Pro Controls:** Tap-to-focus ring animation, zoom presets (`0.6x`, `1.0x`, `2.0x`, `3.0x`, `5.0x`), pinch-to-zoom, rule-of-thirds grid, front/back lens flip, and flash/torch controls.
+- **Tactile Shutter Feedback:** Haptic vibration and shutter button dip animation (no white flash).
+- **Dual-Save Fail-Safe:** Saves to local app storage (`expo-file-system`) AND writes directly to the device's native `DCIM/Camera` album via `expo-media-library` before any upload starts.
 
-3. **Queue & Sync Screen (`app/(tabs)/queue.tsx`)**
-   - Photos grouped by Attendee ID (including `"no_id"`).
-   - Real-time status badges: `pending`, `uploading`, `completed`, `failed`.
-   - Local image thumbnail previews, timestamps, and error diagnostics.
-   - "Sync Now", "Retry Failed", and "Clear Done" actions.
-   - Pull-to-refresh.
+### 3. In-App Review Gallery (`app/gallery.tsx`)
+- In-app gallery accessible directly from the camera thumbnail or session screens.
+- **Interactive Full-Screen Viewer:** 2-finger pinch-to-zoom (1x to 4x), 1-finger pan when zoomed, double-tap zoom, swipe down to dismiss, and swipe navigation.
+- Real-time upload status badges (`Pending`, `Syncing`, `Completed`, `Failed`) for every photo.
 
-4. **Folder Resolution & Caching (`services/driveApi.ts`)**
-   - Configurable `PARENT_DRIVE_FOLDER_ID` (defaults to `'root'`).
-   - 4-step folder resolution algorithm:
-     1. In-memory cache lookup (`parentFolderId::attendeeId`).
-     2. SQLite database table `folder_cache` lookup.
-     3. Google Drive API query for existing folder under parent.
-     4. If not found, creates folder via `POST https://www.googleapis.com/drive/v3/files` and caches the folder ID.
+### 4. Queue & Sync Screen (`app/(tabs)/queue.tsx`)
+- Photos grouped by Attendee ID (including `"no_id"` for general shots).
+- Real-time status indicators: `Pending`, `Uploading`, `Completed`, `Failed`.
+- Queue diagnostics: file size, timestamps, retry counts, and error messages.
+- Queue actions: "Sync Now", "Retry All Failed", "Clear Completed", and individual item deletion.
+- Pull-to-refresh and network warning banner if waiting for Wi-Fi.
 
-5. **Background Sync Engine (`services/queueManager.ts`)**
-   - Network connectivity monitoring via `@react-native-community/netinfo`.
-   - Automatically pauses queue when offline; resumes when connectivity is restored.
-   - Concurrency control (default 2 workers) to preserve mobile hotspot bandwidth.
-   - Resumable/Binary photo uploads to Google Drive with parent folder linking.
+### 5. Background Sync Engine (`services/queueManager.ts` & `services/driveApi.ts`)
+- **Persistent SQLite Ledger:** Photos and folder IDs are tracked in local SQLite database tables (`upload_queue`, `precreated_folders`, `folder_cache`).
+- **Event-Driven Sync Loop:** Every return to the ID screen sweeps the queue and resumes uploads.
+- **Network State Detection:** Continuous monitoring via `@react-native-community/netinfo`.
+- **Granular Network Policies:** 
+  - Attendee folder directory lookups work over both Wi-Fi and Cellular data.
+  - Photo uploads can be set to **Wi-Fi Only** or **Wi-Fi & Cellular**.
+- **Bandwidth Control:** Selectable upload concurrency (1 sequential worker vs. 2 parallel workers) to prevent choking limited venue hotspots.
 
-6. **Settings & Configuration Modal (`app/settings.tsx`)**
-   - Configurable `PARENT_DRIVE_FOLDER_ID` with built-in "Test Connection" tool.
-   - Google Cloud OAuth Web, iOS, and Android Client ID inputs.
-   - Upload concurrency switch (1 sequential vs. 2 parallel).
-   - Database and folder cache cleanup tools.
+### 6. Settings & Configuration (`app/settings.tsx`)
+- **Visual Drive Folder Picker (`components/DriveFolderPickerModal.tsx`):** Browse and select the master event folder directly from Google Drive without copy-pasting folder IDs.
+- **Connection Diagnostics:** Built-in "Test Folder Connection" tool.
+- **Cache Maintenance:** View cached attendee folder count, preview records, manual sync trigger, and cache purge options.
+- **Account Management:** Fast Google account sign-out and profile switching.
 
 ---
 
@@ -58,29 +55,35 @@ A robust, offline-first mobile application built with **React Native**, **Expo S
 
 ```
 ├── app/
-│   ├── _layout.tsx           # Root provider wrapper & auth redirection
-│   ├── auth.tsx              # Auth Gate screen (Google Sign In & Demo Mode)
-│   ├── settings.tsx          # Settings & Drive configuration modal
+│   ├── _layout.tsx               # Root provider wrapper & auth gate
+│   ├── auth.tsx                  # Google OAuth login & Sandbox Demo Mode
+│   ├── camera.tsx                # Pro camera viewfinder & aspect-ratio capture
+│   ├── gallery.tsx               # In-app photo review & zoomable viewer
+│   ├── settings.tsx              # Google Drive configuration & network policies
 │   └── (tabs)/
-│       ├── _layout.tsx       # Bottom tab layout with badge counts
-│       ├── index.tsx         # Main Camera capture & ID locking screen
-│       └── queue.tsx         # Upload queue grouped by attendee
+│       ├── _layout.tsx           # Tab navigation layout
+│       ├── index.tsx             # Attendee ID entry, folder matching & keypad
+│       └── queue.tsx             # Upload queue & attendee photo grouping
 ├── components/
-│   └── LiveQueueBar.tsx      # Floating status badge (Pending/Syncing/Done)
+│   ├── DriveFolderPickerModal.tsx# Visual folder browser for Google Drive
+│   ├── LiveQueueBar.tsx          # Real-time queue progress bar
+│   └── MiniGalleryModal.tsx      # Quick thumbnail drawer
 ├── context/
-│   ├── AuthContext.tsx       # OAuth tokens, profile, and demo state
-│   ├── QueueContext.tsx      # Live queue statistics and action triggers
-│   └── SettingsContext.tsx   # Parent folder, concurrency, and client IDs
+│   ├── AuthContext.tsx           # Google tokens, user profile, and demo mode
+│   ├── QueueContext.tsx          # Live queue statistics and action triggers
+│   └── SettingsContext.tsx       # Folder destinations and upload preferences
 ├── database/
-│   ├── schema.ts             # TypeScript types for queue & cache
-│   └── sqlite.ts             # expo-sqlite initialization & CRUD queries
+│   ├── schema.ts                 # SQLite TypeScript models and schemas
+│   └── sqlite.ts                 # expo-sqlite CRUD queries & migrations
+├── plugins/
+│   └── withAndroidLocalProperties.js # Expo config plugin for stable Android builds
 ├── services/
-│   ├── driveApi.ts           # Google Drive folder resolution & photo upload
-│   ├── googleAuth.ts         # OAuth 2.0 flow, token refresh, SecureStore
-│   └── queueManager.ts       # Background sync engine & NetInfo listener
-├── app.json                  # Expo config with scheme & camera plugin
-├── package.json              # Expo SDK 57 dependencies
-└── tsconfig.json             # TypeScript configuration with strict types
+│   ├── driveApi.ts               # Google Drive API, folder parsing, photo upload
+│   ├── googleAuth.ts             # OAuth 2.0 flow & token refresh via SecureStore
+│   └── queueManager.ts           # Upload queue worker & NetInfo monitor
+├── app.json                      # Expo app configuration and permissions
+├── package.json                  # Dependencies
+└── tsconfig.json                 # TypeScript strict configuration
 ```
 
 ---
@@ -89,7 +92,7 @@ A robust, offline-first mobile application built with **React Native**, **Expo S
 
 ### 1. Install Dependencies
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 ### 2. Start the Development Server
@@ -97,15 +100,12 @@ npm install
 npx expo start
 ```
 
-Press `a` for Android Emulator, `i` for iOS Simulator, or scan the QR code using the Expo Go mobile app.
+Press `a` to run on Android.
 
 ---
 
-## Testing & Demo Mode
+## Android Build & Environment Notes
 
-If you don't have Google Cloud Console credentials ready:
-1. Launch the app.
-2. On the **Auth Gate** screen, tap **"Launch Demo Mode (Offline / Sandbox)"**.
-3. You will immediately enter the Camera screen with a simulated staff profile.
-4. Capture photos with or without an Attendee ID locked.
-5. Watch the **Live Queue Bar** and switch to the **Queue & Sync** tab to see photos transition from `Pending` -> `Syncing` -> `Completed`!
+- **Windows C++ Path Limit Workaround:** In `android/gradle.properties`, `newArchEnabled=false` is configured to bypass Windows CMake/Ninja 260-character path limits during C++ compilation.
+- **Permissions:** The app requests `CAMERA`, `READ_MEDIA_IMAGES`, `WRITE_EXTERNAL_STORAGE`, and `READ_EXTERNAL_STORAGE` to support instant local gallery saving to `DCIM/Camera`.
+- **Google Cloud OAuth:** Ensure your OAuth consent screen is configured with the `https://www.googleapis.com/auth/drive.file` scope. If the app is in "Testing" mode in Google Cloud Console, add staff email accounts to the **Test users** whitelist.
