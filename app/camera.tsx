@@ -20,6 +20,7 @@ import { addToQueueAsync } from '../database/sqlite';
 import { queueManager } from '../services/queueManager';
 import { useQueue } from '../context/QueueContext';
 import { Colors } from '../constants/colors';
+import { Asset, Album, requestPermissionsAsync } from 'expo-media-library';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
 const PHOTOS_DIR = `${FileSystem.documentDirectory}photos/`;
@@ -381,6 +382,31 @@ export default function CameraScreen() {
         setLatestPhotoUri(destinationUri);
         await addToQueueAsync(targetAttendeeId, destinationUri, resolvedFolderId);
         queueManager.enqueueTrigger();
+
+        // Save copy directly to device default gallery (DCIM/Camera)
+        try {
+          const perm = await requestPermissionsAsync(true);
+          if (perm.granted) {
+            let saved = false;
+            try {
+              const cameraAlbum = await Album.get('Camera');
+              if (cameraAlbum) {
+                await Asset.create(destinationUri, cameraAlbum);
+                saved = true;
+              }
+            } catch {
+              // Fallback to DCIM root if querying albums fails or requires read permission
+            }
+            if (!saved) {
+              await Asset.create(destinationUri);
+            }
+            console.log('[Camera] Photo successfully saved to DCIM/Camera gallery.');
+          } else {
+            console.log('[Camera] MediaLibrary write permission not granted; skipped DCIM save.');
+          }
+        } catch (mediaErr) {
+          console.warn('[Camera] Failed saving photo to DCIM/Camera:', mediaErr);
+        }
       } catch (err) {
         console.error('Background capture processing error:', err);
       }

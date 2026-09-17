@@ -24,7 +24,7 @@ interface GroupedQueue {
 }
 
 export default function QueueScreen() {
-  const { stats, isOnline, triggerSync, retryFailed, clearCompleted } = useQueue();
+  const { stats, isOnline, isWaitingForWifi, triggerSync, retryFailed, clearCompleted } = useQueue();
   const [items, setItems] = useState<UploadQueueRecord[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
@@ -209,6 +209,16 @@ export default function QueueScreen() {
           </TouchableOpacity>
         )}
       </View>
+
+      {/* Cellular Wi-Fi Only Notice */}
+      {isWaitingForWifi && stats.pending > 0 && (
+        <View style={styles.wifiOnlyNotice}>
+          <Ionicons name="information-circle-outline" size={16} color={Colors.warning} />
+          <Text style={styles.wifiOnlyNoticeText}>
+            Uploads held on mobile data ("Wi-Fi Only" active). Connect to Wi-Fi to sync {stats.pending} photo(s), or allow cellular in Settings.
+          </Text>
+        </View>
+      )}
 
       {/* Grouped Queue List */}
       <FlatList
@@ -499,5 +509,24 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     padding: 8,
+  },
+  wifiOnlyNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.warningBg,
+    borderRadius: 12,
+    padding: 12,
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.3)',
+    gap: 8,
+  },
+  wifiOnlyNoticeText: {
+    flex: 1,
+    fontSize: 12,
+    color: Colors.warning,
+    lineHeight: 16,
+    fontWeight: '600',
   },
 });

@@ -18,6 +18,8 @@ export type QueueEventCallback = (stats: QueueSummary) => void;
 
 class QueueManager {
   private isOnline: boolean = true;
+  private isWifi: boolean = true;
+  private uploadOnlyOnWifi: boolean = true;
   private isPaused: boolean = false;
   private activeUploads: number = 0;
   private maxConcurrency: number = 2;
@@ -39,18 +41,24 @@ class QueueManager {
 
     this.unsubscribeNetInfo = NetInfo.addEventListener((state: NetInfoState) => {
       const connected = Boolean(state.isConnected && state.isInternetReachable !== false);
-      const wasOffline = !this.isOnline;
-      this.isOnline = connected;
+      const wifi = state.type === 'wifi' || state.type === 'ethernet';
+      const wasCanUpload = this.canUpload();
 
-      if (wasOffline && connected && !this.isPaused) {
-        console.log('[QueueManager] Network restored. Resuming queue processing.');
-        this.syncFolders().catch(e => console.warn('Sync folders on reconnect:', e));
+      this.isOnline = connected;
+      this.isWifi = wifi;
+
+      const nowCanUpload = this.canUpload();
+
+      if (!wasCanUpload && nowCanUpload && !this.isPaused) {
+        console.log('[QueueManager] Suitable network restored (Wi-Fi/Cellular per policy). Resuming queue processing.');
         this.processQueue();
       }
+      this.notifyListeners();
     });
 
     NetInfo.fetch().then(state => {
       this.isOnline = Boolean(state.isConnected && state.isInternetReachable !== false);
+      this.isWifi = state.type === 'wifi' || state.type === 'ethernet';
     });
   }
 
@@ -62,16 +70,57 @@ class QueueManager {
     this.maxConcurrency = Math.max(1, Math.min(concurrency, 3));
   }
 
+  public setUploadOnlyOnWifi(enabled: boolean): void {
+    const changed = this.uploadOnlyOnWifi !== enabled;
+    this.uploadOnlyOnWifi = enabled;
+    if (changed) {
+      console.log(`[QueueManager] uploadOnlyOnWifi set to: ${enabled}`);
+      if (this.canUpload() && !this.isPaused) {
+        this.processQueue();
+      }
+      this.notifyListeners();
+    }
+  }
+
+  public getIsWifi(): boolean {
+    return this.isWifi;
+  }
+
+  public getUploadOnlyOnWifi(): boolean {
+    return this.uploadOnlyOnWifi;
+  }
+
+  public isWaitingForWifi(): boolean {
+    return this.isOnline && this.uploadOnlyOnWifi && !this.isWifi;
+  }
+
+  public canUpload(): boolean {
+    return this.isOnline && (!this.uploadOnlyOnWifi || this.isWifi);
+  }
+
   public setAuthContext(accessToken: string | null, isDemo: boolean): void {
     this.currentAccessToken = accessToken;
     this.isDemoMode = isDemo;
-    if (accessToken || isDemo) {
-      this.syncFolders().catch(e => console.warn('[QueueManager] Initial folder sync failed:', e));
+    // Note: Folder sync is intentionally NOT called here.
+    // It is triggered once the user selects a Drive folder or navigates to the Enter ID page.
+    if ((accessToken || isDemo) && this.canUpload()) {
       this.processQueue();
     }
   }
 
   public async syncFolders(): Promise<number> {
+    // Folder sync works on both mobile data and Wi-Fi as long as online!
+    if (!this.isOnline) {
+      console.log('[QueueManager] syncFolders skipped: Device is offline.');
+      return 0;
+    }
+
+    // Only sync if a specific parent event folder has been selected
+    if (!this.parentFolderId || this.parentFolderId === 'root' || this.parentFolderId.trim() === '') {
+      console.log('[QueueManager] syncFolders skipped: No event folder selected yet.');
+      return 0;
+    }
+
     try {
       let token = this.currentAccessToken;
       let isDemo = this.isDemoMode;
@@ -88,7 +137,7 @@ class QueueManager {
           token || 'demo',
           isDemo
         );
-        console.log(`[QueueManager] Synced ${folders.length} pre-created folders from Drive.`);
+        console.log(`[QueueManager] Synced ${folders.length} pre-created folders from Drive (Works on Wi-Fi & Mobile data).`);
         return folders.length;
       }
     } catch (e) {
@@ -153,6 +202,11 @@ class QueueManager {
 
   public async processQueue(): Promise<void> {
     if (this.isPaused || !this.isOnline) {
+      return;
+    }
+
+    if (this.uploadOnlyOnWifi && !this.isWifi) {
+      console.log('[QueueManager] Uploads held: Device is on Cellular data and "Wi-Fi Only" upload policy is active.');
       return;
     }
 

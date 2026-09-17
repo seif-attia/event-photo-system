@@ -8,6 +8,7 @@ export interface AppSettings {
   parentFolderName?: string;
   maxConcurrency: number;
   autoCleanCompleted: boolean;
+  uploadOnlyOnWifi: boolean;
   webClientId: string;
   iosClientId: string;
   androidClientId: string;
@@ -25,6 +26,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   parentFolderName: '',
   maxConcurrency: 2,
   autoCleanCompleted: false,
+  uploadOnlyOnWifi: true,
   webClientId: '',
   iosClientId: '',
   androidClientId: '',
@@ -72,9 +74,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setSettings(merged);
         queueManager.setParentFolderId(merged.parentFolderId || 'root');
         queueManager.setMaxConcurrency(merged.maxConcurrency);
+        queueManager.setUploadOnlyOnWifi(merged.uploadOnlyOnWifi ?? true);
       } else {
         queueManager.setParentFolderId(DEFAULT_SETTINGS.parentFolderId || 'root');
         queueManager.setMaxConcurrency(DEFAULT_SETTINGS.maxConcurrency);
+        queueManager.setUploadOnlyOnWifi(DEFAULT_SETTINGS.uploadOnlyOnWifi);
       }
     } catch (e) {
       console.error('Failed to load settings:', e);
@@ -94,6 +98,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
     if (partial.maxConcurrency !== undefined) {
       queueManager.setMaxConcurrency(partial.maxConcurrency);
+    }
+    if (partial.uploadOnlyOnWifi !== undefined) {
+      queueManager.setUploadOnlyOnWifi(partial.uploadOnlyOnWifi);
     }
 
     try {

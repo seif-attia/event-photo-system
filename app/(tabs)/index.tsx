@@ -11,7 +11,7 @@ import {
   Alert,
   Keyboard,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -41,6 +41,8 @@ export default function SessionScreen() {
   const [cachedFolderCount, setCachedFolderCount] = useState(0);
   const [isSyncingFolders, setIsSyncingFolders] = useState(false);
 
+  const lastSyncTimeRef = React.useRef<number>(0);
+
   // Load pre-created Drive folder count
   const loadFolderCount = useCallback(async () => {
     try {
@@ -51,9 +53,28 @@ export default function SessionScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    loadFolderCount();
-  }, [loadFolderCount]);
+  // Auto-sync folders each time staff navigates to the Enter ID page (works on both mobile data and Wi-Fi)
+  useFocusEffect(
+    useCallback(() => {
+      loadFolderCount();
+
+      const hasFolder = Boolean(settings.parentFolderId && settings.parentFolderId !== 'root' && settings.parentFolderId.trim() !== '');
+      const now = Date.now();
+      // 15-second throttle to avoid spamming Google Drive when switching tabs rapidly
+      if (hasFolder && now - lastSyncTimeRef.current > 15000) {
+        lastSyncTimeRef.current = now;
+        console.log('[SessionScreen] Auto-syncing attendee folders on page focus (Mobile/Wi-Fi)...');
+        syncFolders()
+          .then(count => {
+            loadFolderCount();
+            console.log(`[SessionScreen] Auto-sync completed: ${count} folder(s) cached.`);
+          })
+          .catch(err => {
+            console.log('[SessionScreen] Auto-sync non-fatal error:', err);
+          });
+      }
+    }, [settings.parentFolderId, syncFolders, loadFolderCount])
+  );
 
   // Match folder whenever numericIdInput changes
   useEffect(() => {

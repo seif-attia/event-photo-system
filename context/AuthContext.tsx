@@ -116,20 +116,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await updateSetting('webClientId', customClientId);
       }
 
-      const isExpoGo =
-        Constants.appOwnership === 'expo' ||
-        Constants.executionEnvironment === 'storeClient';
+      // For Google OAuth with a Web Client ID, Google strictly requires an HTTPS redirect URI.
+      // The Expo Auth Proxy provides the authorized HTTPS endpoint and forwards the auth token
+      // back to the app scheme (eventphotosystem://) on the device.
+      const hasCustomRedirect = Boolean(process.env.EXPO_PUBLIC_GOOGLE_REDIRECT_URI);
+      const redirectUri = hasCustomRedirect
+        ? process.env.EXPO_PUBLIC_GOOGLE_REDIRECT_URI!.trim()
+        : 'https://auth.expo.io/@anonymous/EventPhotoSystem';
 
-      let redirectUri: string;
-      if (process.env.EXPO_PUBLIC_GOOGLE_REDIRECT_URI) {
-        redirectUri = process.env.EXPO_PUBLIC_GOOGLE_REDIRECT_URI.trim();
-      } else if (isExpoGo) {
-        redirectUri = 'https://auth.expo.io/@anonymous/EventPhotoSystem';
-      } else {
-        redirectUri = AuthSession.makeRedirectUri({
-          scheme: 'eventphotosystem',
-        });
-      }
       console.log('[Auth] Google OAuth Redirect URI:', redirectUri);
 
       const request = new AuthSession.AuthRequest({
@@ -142,9 +136,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       let result: any;
 
-      if (isExpoGo) {
+      if (!hasCustomRedirect) {
         const googleAuthUrl = await request.makeAuthUrlAsync(GOOGLE_DISCOVERY);
-        const returnUrl = AuthSession.getDefaultReturnUrl();
+        const returnUrl = AuthSession.getDefaultReturnUrl(undefined, { scheme: 'eventphotosystem' });
         const startUrl = `https://auth.expo.io/@anonymous/EventPhotoSystem/start?authUrl=${encodeURIComponent(
           googleAuthUrl
         )}&returnUrl=${encodeURIComponent(returnUrl)}`;

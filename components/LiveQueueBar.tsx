@@ -9,7 +9,7 @@ interface LiveQueueBarProps {
 }
 
 export const LiveQueueBar: React.FC<LiveQueueBarProps> = ({ onPress }) => {
-  const { stats, isOnline } = useQueue();
+  const { stats, isOnline, isWaitingForWifi } = useQueue();
 
   return (
     <TouchableOpacity
@@ -21,10 +21,18 @@ export const LiveQueueBar: React.FC<LiveQueueBarProps> = ({ onPress }) => {
         <View
           style={[
             styles.statusDot,
-            { backgroundColor: isOnline ? Colors.success : Colors.error },
+            {
+              backgroundColor: !isOnline
+                ? Colors.error
+                : isWaitingForWifi
+                ? Colors.warning
+                : Colors.success,
+            },
           ]}
         />
-        <Text style={styles.networkText}>{isOnline ? 'Online' : 'Offline'}</Text>
+        <Text style={styles.networkText}>
+          {!isOnline ? 'Offline' : isWaitingForWifi ? 'Needs Wi-Fi' : 'Online'}
+        </Text>
       </View>
 
       <View style={styles.divider} />

@@ -6,6 +6,8 @@ import { clearCompletedAsync } from '../database/sqlite';
 interface QueueContextType {
   stats: QueueSummary;
   isOnline: boolean;
+  isWifi: boolean;
+  isWaitingForWifi: boolean;
   triggerSync: () => void;
   syncFolders: () => Promise<number>;
   retryFailed: () => Promise<number>;
@@ -24,6 +26,8 @@ const DEFAULT_STATS: QueueSummary = {
 const QueueContext = createContext<QueueContextType>({
   stats: DEFAULT_STATS,
   isOnline: true,
+  isWifi: true,
+  isWaitingForWifi: false,
   triggerSync: () => {},
   syncFolders: async () => 0,
   retryFailed: async () => 0,
@@ -34,18 +38,24 @@ const QueueContext = createContext<QueueContextType>({
 export const QueueProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [stats, setStats] = useState<QueueSummary>(DEFAULT_STATS);
   const [isOnline, setIsOnline] = useState<boolean>(queueManager.getNetworkStatus());
+  const [isWifi, setIsWifi] = useState<boolean>(queueManager.getIsWifi());
+  const [isWaitingForWifi, setIsWaitingForWifi] = useState<boolean>(queueManager.isWaitingForWifi());
 
   useEffect(() => {
+    const updateNetwork = () => {
+      setIsOnline(queueManager.getNetworkStatus());
+      setIsWifi(queueManager.getIsWifi());
+      setIsWaitingForWifi(queueManager.isWaitingForWifi());
+    };
+
     // Subscribe to real-time queue stats
     const unsubscribe = queueManager.subscribe(newStats => {
       setStats(newStats);
-      setIsOnline(queueManager.getNetworkStatus());
+      updateNetwork();
     });
 
     // Check network periodically or on change
-    const interval = setInterval(() => {
-      setIsOnline(queueManager.getNetworkStatus());
-    }, 2000);
+    const interval = setInterval(updateNetwork, 2000);
 
     return () => {
       unsubscribe();
@@ -80,6 +90,8 @@ export const QueueProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       value={{
         stats,
         isOnline,
+        isWifi,
+        isWaitingForWifi,
         triggerSync,
         syncFolders,
         retryFailed,

@@ -351,6 +351,66 @@ export default function SettingsScreen() {
         </View>
       </View>
 
+      {/* Upload Network Policy */}
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Ionicons name="wifi-outline" size={20} color={Colors.primaryLight} />
+          <Text style={styles.cardTitle}>Upload Network Mode</Text>
+        </View>
+        <Text style={styles.hint}>
+          Control which network can upload photos to Google Drive. Attendee folder list syncing always works over both Wi-Fi and Mobile Data.
+        </Text>
+        <View style={styles.concurrencyRow}>
+          <TouchableOpacity
+            style={[
+              styles.concurrencyButton,
+              settings.uploadOnlyOnWifi && styles.concurrencyButtonActive,
+            ]}
+            onPress={() => updateSetting('uploadOnlyOnWifi', true)}
+          >
+            <View style={styles.optionContent}>
+              <Ionicons
+                name="wifi"
+                size={16}
+                color={settings.uploadOnlyOnWifi ? Colors.textPrimary : Colors.textMuted}
+              />
+              <Text
+                style={[
+                  styles.concurrencyText,
+                  settings.uploadOnlyOnWifi && styles.concurrencyTextActive,
+                ]}
+              >
+                Wi-Fi Only
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.concurrencyButton,
+              !settings.uploadOnlyOnWifi && styles.concurrencyButtonActive,
+            ]}
+            onPress={() => updateSetting('uploadOnlyOnWifi', false)}
+          >
+            <View style={styles.optionContent}>
+              <Ionicons
+                name="cellular"
+                size={16}
+                color={!settings.uploadOnlyOnWifi ? Colors.textPrimary : Colors.textMuted}
+              />
+              <Text
+                style={[
+                  styles.concurrencyText,
+                  !settings.uploadOnlyOnWifi && styles.concurrencyTextActive,
+                ]}
+              >
+                Wi-Fi & Cellular
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {/* Database Maintenance */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
@@ -627,6 +687,12 @@ const styles = StyleSheet.create({
   concurrencyTextActive: {
     color: Colors.textPrimary,
     fontWeight: '700',
+  },
+  optionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
   },
   dangerButton: {
     flexDirection: 'row',
